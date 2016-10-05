@@ -1,15 +1,28 @@
-body {
+body,html {
   margin:0;
-  width:100%
 }
 
 .header {
-  width:100%;
 
   color:white;
   background-color: black;
-  border-bottom:1px solid #ccc;
+  border-bottom:3px solid #ccc;
   text-transform: uppercase;
   text-align: center;
   padding:10px
+}
+
+.footer-container{
+  position:fixed;
+  left:0;
+  right:0;
+  bottom:0;
+}
+
+.footer{
+  background-color: lightgreen;
+  text-align: center;
+  color:white;
+  border:1px 0px solid #ccc;
+  padding:5px;
 }

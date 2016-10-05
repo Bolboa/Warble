@@ -15,7 +15,9 @@ const store = createStore(allReducers);
 render(
   <Provider store={store}>
     <Router history = {browserHistory}>
-      <Route path='/' component= {App}></Route>
+      <Route path='/' component= {App}>
+
+      </Route>
     </Router>
   </Provider>
 , document.getElementById('app'));
