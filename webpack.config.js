@@ -8,6 +8,7 @@ var extractCSS = new ExtractTextPlugin('styles.css',{
 module.exports = {
   entry: './src',
 
+  devtool: 'source-map',
   output: {
     path:'public',
     filename: 'scripts/bundle.js',

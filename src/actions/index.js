@@ -1,6 +1,10 @@
-export sayHello = ()=>{
+const saySomething = message =>{
   return {
-    type: "SAY_HELLO",
-    message: "HELLO!"
+    type: "SAY_SOMETHING",
+    message
   }
+}
+
+export {
+  saySomething
 }
