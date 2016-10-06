@@ -1,10 +1,3 @@
-const saySomething = message =>{
-  return {
-    type: "SAY_SOMETHING",
-    message
-  }
-}
-
 const toggleComplete = index =>{
   console.log()
   return {
