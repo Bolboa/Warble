@@ -26,8 +26,9 @@ const allReducers = combineReducers({
         case "TOGGLE_COMPLETE":
           return state.map((task,index)=>{
             if(index === action.index){
-                var obj = Object.assign({},state[action.index]);
-                obj.completed = !obj.completed;
+                var obj = Object.assign({},task,{
+                  completed:!task.completed
+                });
                 return obj;
             }
             return task

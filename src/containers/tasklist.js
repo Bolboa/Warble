@@ -3,6 +3,7 @@ import { connect } from 'react-redux'
 import {bindActionCreators} from 'redux'
 
 import Task from '../components/task.component'
+
 import { toggleComplete } from '../actions'
 
 class TaskList extends Component {

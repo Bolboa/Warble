@@ -7,6 +7,10 @@ a{
   margin:5px;
 }
 
+a:active, a:visited {
+  color:inherit;
+}
+
 .header {
 
   color:white;
@@ -25,7 +29,7 @@ a{
 }
 
 .footer{
-  background-color: lightgreen;
+  background-color: black;
   text-align: center;
   color:white;
   border:1px 0px solid #ccc;
@@ -36,7 +40,7 @@ a{
   background-color:#f1f1f1;
   margin:0px 10px;
   padding:5px;
-  border:4px solid lightgreen
+  border:4px solid black
 }
 
 .tasklist-header{
@@ -67,4 +71,16 @@ a{
 
 .red{
   color:#dc4c4c
+}
+
+.green-border{
+  color:lightgreen
+}
+
+.red-border{
+  color:#dc4c4c
+}
+
+.link-active{
+  border-bottom:1px solid #ccc
 }

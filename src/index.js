@@ -5,6 +5,7 @@ import {Provider} from 'react-redux'
 import { createStore } from 'redux'
 
 import allReducers from './reducers'
+
 import App from './containers/app'
 import TaskList from './containers/tasklist'
 import Home from './containers/home'
