@@ -18,6 +18,6 @@ export default class Task extends Component {
 }
 
 Task.propTypes = {
-  task: React.PropTypes.string,
-  completed: React.PropTypes.bool
+  task: React.PropTypes.string.isRequired,
+  completed: React.PropTypes.bool.isRequired
 }
