@@ -9,3 +9,7 @@ export default class Header extends Component{
     )
   }
 }
+
+Header.propTypes = {
+  title:React.PropTypes.string
+}

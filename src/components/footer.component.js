@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 
-export default class Header extends Component{
+export default class Footer extends Component{
   render(){
     return (
       <div className = 'footer-container'>
@@ -8,4 +8,8 @@ export default class Header extends Component{
       </div>
     )
   }
+}
+
+Footer.propTypes = {
+  message: React.PropTypes.string
 }
