@@ -7,6 +7,5 @@ const toggleComplete = index =>{
 }
 
 export {
-  saySomething,
   toggleComplete
 }
