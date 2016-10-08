@@ -25,27 +25,57 @@ app.use(webpackDevMiddleware(compiler, {
 
 app.use(webpackHotMiddleware(compiler));
 
+
 app.get('*', function(req, res){
 	res.sendFile(path.resolve('public/index.html'));
 });
+
+var rooms = [];
+
+var Room = function(){
+	this.id = Math.random*5;
+	this.space = [];
+
+}
+
+Room.prototype = {
+	constructor: Room,
+	isFull: function(){
+		if(this.space.length == 2) return true
+		else return false;
+	},
+	addUser: function(id){
+		this.space.push(id);
+	},
+	getRoom:function(){
+		return this.space;
+	}
+}
+
 
 
 
 
 io.on('connection', function(socket) {
     console.log("hi");
-
-    socket.on('ice',function(data){
-    	console.log(">>>>Server received ice");
-		console.log(data);
-		socket.broadcast.emit('message',data);
-	})
-
-	socket.on('desc',function(data){
-		console.log(">>>>Server received desc");
-		console.log(data)
-		socket.broadcast.emit('message',data);
-	})
+    socket.on('pID', function(data){
+    	rooms.forEach(function(room,index){
+    		if(!room.isFull()){
+    			console.log("room not full");
+    			room.addUser(data);
+    			socket.emit('joinRoom', room.space);
+    			console.log(JSON.stringify(rooms))
+    			return	
+    		}
+    	})
+    	console.log("herre");
+		var newRoom = new Room();
+		newRoom.addUser(data);
+		rooms.push(newRoom);
+		socket.emit('joinRoom',newRoom.space);
+		console.log(JSON.stringify(rooms))
+    });
+   
 });
 
 

@@ -8,12 +8,10 @@ import { login } from '../actions'
 class Chat extends Component {
 	constructor(props){
 		super(props);
-		this.localStream = "";
-		this.peerConnectionConfig = {'iceServers': [{'url': 'stun:stun.services.mozilla.com'}, {'url': 'stun:stun.l.google.com:19302'}]};
-		this.peerConnection = "";
-		window.RTCPeerConnection = window.RTCPeerConnection || window.mozRTCPeerConnection || window.webkitRTCPeerConnection;
-		window.RTCIceCandidate = window.RTCIceCandidate || window.mozRTCIceCandidate || window.webkitRTCIceCandidate;
-window.RTCSessionDescription = window.RTCSessionDescription || window.mozRTCSessionDescription || window.webkitRTCSessionDescription;
+
+		this.localStream = '';
+		this.remoteStream = '';
+		
 	}
 
 	componentWillMount(){
@@ -21,108 +19,76 @@ window.RTCSessionDescription = window.RTCSessionDescription || window.mozRTCSess
 			browserHistory.push('/')
 	}
 	componentDidMount() {
-		var constraints = {
-	        video: true,
-	        audio: true
-    	};
-    	navigator.getUserMedia = navigator.getUserMedia || navigator.mozGetUserMedia || navigator.webkitGetUserMedia;
-    	if(navigator.getUserMedia) {
-	        navigator.getUserMedia(constraints, this.getUserMediaSuccess.bind(this), this.getUserMediaError.bind(this));
+		navigator.getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia;
 
-	    } else {
-	        alert('Your browser does not support getUserMedia API');
-	    }
+		navigator.getUserMedia({video: true, audio: true}, function(stream) {
+			this.localStream = stream;
+			this.refs.localStream.src = window.URL.createObjectURL(this.localStream);
+		}.bind(this),function(err){
+			console.log("Error",err)
+		});
 
-	    //event listener
-	    this.props.socket.on('message',this.gotMessageFromServer.bind(this));
-	    
+		// var peer = new Peer({
+		// 	host:'localhost',
+		// 	port:5000, 
+		// 	path:'/',
+		// 	config:{'iceServers': [
+		// 		{url:'stun:stun01.sipphone.com'},
+		// 		{url:'stun:stun.ekiga.net'},
+		// 		{url:'stun:stun.fwdnet.net'},
+		// 		{url:'stun:stun.ideasip.com'},
+		// 		{url:'stun:stun.iptel.org'},
+		// 		{url:'stun:stun.rixtelecom.se'},
+		// 		{url:'stun:stun.schlund.de'},
+		// 		{url:'stun:stun.l.google.com:19302'},
+		// 		{url:'stun:stun1.l.google.com:19302'},
+		// 		{url:'stun:stun2.l.google.com:19302'},
+		// 		{url:'stun:stun3.l.google.com:19302'},
+		// 		{url:'stun:stun4.l.google.com:19302'},
+		// 		{url:'stun:stunserver.org'},
+		// 		{url:'stun:stun.softjoys.com'},
+		// 		{url:'stun:stun.voiparound.com'},
+		// 		{url:'stun:stun.voipbuster.com'},
+		// 		{url:'stun:stun.voipstunt.com'},
+		// 		{url:'stun:stun.voxgratia.org'},
+		// 		{url:'stun:stun.xten.com'},
+		// 	]}
+		// });
+
+		var peer = new Peer({key:'p73vkga2525fusor'});
+
+		peer.on('open', function(id) {
+			var self= this;
+			this.props.socket.emit('pID', id);
+  			console.log('My peer ID is: ' + id);
+  			this.props.socket.on('joinRoom', function(data) {
+  				//console.log("someone joined");
+  				data.forEach(function(user,index) {
+  					if (user != id) {
+  						console.log(user);
+						 var call = peer.call(user, self.localStream);
+						 call.on('stream', function(remoteStream) {
+						 	console.log("Got Stream " + user);
+						 	self.remoteStream=remoteStream;
+
+						    // Show stream in some video/canvas element.
+						    self.refs.remoteStream.src = window.URL.createObjectURL(self.remoteStream);
+						 });
+						peer.on('call', function(call) {
+							console.log("Got call " + user);
+						    call.answer(self.localStream); // Answer the call with an A/V stream.
+					
+						});
+					}  					
+  					//console.log(index);
+  				});
+  			});
+		}.bind(this));
 
 
-
-	}
-
-	getUserMediaSuccess(stream) {
-
-		this.localStream = stream;
-		var vid = this.refs.localStream;
-		vid.src = window.URL.createObjectURL(this.localStream);
-		vid.play();
-
-
-	}
-
-	getUserMediaError(err) {
-		console.log(err);
-	}
-
-	start(isCaller) {
-		if (this.localStream == null) {
-			return false;
-		}
-		else {
-			this.peerConnection = new window.RTCPeerConnection(this.peerConnectionConfig);
-    		this.peerConnection.onicecandidate = this.gotIceCandidate.bind(this);
-    		this.peerConnection.onaddstream = this.gotRemoteStream.bind(this);
-    		this.peerConnection.addStream(this.localStream);
-    		if(isCaller) {
-        		this.peerConnection.createOffer(this.gotDescription.bind(this), this.createOfferError);
-    		}
-
-		}
-
-
-	}
-
-	gotDescription(description) {
-		var self = this;
-		console.log('got description');
-    	this.peerConnection.setLocalDescription(description, function () {
-	        	self.props.socket.emit('desc',JSON.stringify({'sdp': description}));
-	    }, function() {console.log('set description error')});
 	}
 
 	
-
-	createOfferError(error) {
-		console.log(error);
-	}
-
-	gotIceCandidate(event) {
-		console.log("Got Ice candidate");
-		if(event.candidate != null) {
-        	this.props.socket.emit('ice',JSON.stringify({'ice': event.candidate}));
-    	}	
-	}
-
-	gotRemoteStream(event) {
-	    console.log("Got remote stream");
-	    var remote = this.refs.remoteStream;
-	    remote.src = window.URL.createObjectURL(event.stream);
-	}
-
-	gotMessageFromServer(message) {
-		var self= this;
-		console.log("Got message from server");
-	    if(!this.peerConnection) {
-	    	this.start(false);
-	    }
-	    
-
-	    console.log(message);
-	    var signal = JSON.parse(message);
-
-	    if(signal.sdp) {
-	        self.peerConnection.setRemoteDescription(new window.RTCSessionDescription(signal.sdp), function() {
-	            self.peerConnection.createAnswer(self.gotDescription.bind(self), self.errorHandler.bind(self));
-	        }, self.errorHandler);
-	    } else if(signal.ice) {
-	        self.peerConnection.addIceCandidate(new window.RTCIceCandidate(signal.ice));
-	    }
-	}
-
-	errorHandler(error) {
-		console.log(error);
-	}
 
 
 	render(){
@@ -130,8 +96,8 @@ window.RTCSessionDescription = window.RTCSessionDescription || window.mozRTCSess
       <div>
  		<h1>Chat Lobby!</h1>
  		<div>Welcome Warbler! {this.props.username}</div>
- 		<video ref="localStream" width="320" height="240" ></video>
- 		<video ref="remoteStream" width="320" height="240" ></video>
+ 		<video ref="localStream" width="320" height="240" autoPlay></video>
+ 		<video ref="remoteStream" width="320" height="240" autoPlay></video>
  		<button onClick={()=>{this.start(true)}}>CLICK ME</button>
 
       </div>
