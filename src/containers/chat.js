@@ -23,7 +23,7 @@ window.RTCSessionDescription = window.RTCSessionDescription || window.mozRTCSess
 	componentDidMount() {
 		var constraints = {
 	        video: true,
-	        audio: false
+	        audio: true
     	};
     	navigator.getUserMedia = navigator.getUserMedia || navigator.mozGetUserMedia || navigator.webkitGetUserMedia;
     	if(navigator.getUserMedia) {
@@ -32,6 +32,9 @@ window.RTCSessionDescription = window.RTCSessionDescription || window.mozRTCSess
 	    } else {
 	        alert('Your browser does not support getUserMedia API');
 	    }
+
+	    //event listener
+	    this.props.socket.on('message',this.gotMessageFromServer.bind(this));
 	    
 
 
@@ -75,8 +78,8 @@ window.RTCSessionDescription = window.RTCSessionDescription || window.mozRTCSess
 		console.log('got description');
     	this.peerConnection.setLocalDescription(description, function () {
 	        	self.props.socket.emit('desc',JSON.stringify({'sdp': description}));
-	    	}, function() {console.log('set description error')});
-		}
+	    }, function() {console.log('set description error')});
+	}
 
 	
 
@@ -85,34 +88,39 @@ window.RTCSessionDescription = window.RTCSessionDescription || window.mozRTCSess
 	}
 
 	gotIceCandidate(event) {
+		console.log("Got Ice candidate");
 		if(event.candidate != null) {
         	this.props.socket.emit('ice',JSON.stringify({'ice': event.candidate}));
     	}	
 	}
 
 	gotRemoteStream(event) {
-	    console.log("got remote stream");
+	    console.log("Got remote stream");
 	    var remote = this.refs.remoteStream;
 	    remote.src = window.URL.createObjectURL(event.stream);
 	}
 
 	gotMessageFromServer(message) {
+		var self= this;
+		console.log("Got message from server");
 	    if(!this.peerConnection) {
 	    	this.start(false);
 	    }
 	    
 
-	    var signal = JSON.parse(message.data);
+	    console.log(message);
+	    var signal = JSON.parse(message);
+
 	    if(signal.sdp) {
-	        this.peerConnection.setRemoteDescription(new RTCSessionDescription(signal.sdp), function() {
-	            this.peerConnection.createAnswer(this.gotDescription, this.errorHandler);
-	        }, errorHandler);
+	        self.peerConnection.setRemoteDescription(new window.RTCSessionDescription(signal.sdp), function() {
+	            self.peerConnection.createAnswer(self.gotDescription.bind(self), self.errorHandler.bind(self));
+	        }, self.errorHandler);
 	    } else if(signal.ice) {
-	        this.peerConnection.addIceCandidate(new RTCIceCandidate(signal.ice));
+	        self.peerConnection.addIceCandidate(new window.RTCIceCandidate(signal.ice));
 	    }
 	}
 
-	errorHandler() {
+	errorHandler(error) {
 		console.log(error);
 	}
 

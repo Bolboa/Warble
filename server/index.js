@@ -34,7 +34,21 @@ app.get('*', function(req, res){
 
 io.on('connection', function(socket) {
     console.log("hi");
+
+    socket.on('ice',function(data){
+    	console.log(">>>>Server received ice");
+		console.log(data);
+		socket.broadcast.emit('message',data);
+	})
+
+	socket.on('desc',function(data){
+		console.log(">>>>Server received desc");
+		console.log(data)
+		socket.broadcast.emit('message',data);
+	})
 });
+
+
 
 
 var PORT = process.env.PORT || 3000;
