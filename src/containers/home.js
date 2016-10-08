@@ -1,12 +1,40 @@
 import React, { Component } from 'react'
+import { bindActionCreators } from 'redux'
+import { connect } from 'react-redux'
+import { browserHistory } from 'react-router'
+import { login } from '../actions'
 
-export default class Home extends Component {
-  render(){
-    return(
+class Home extends Component {
+
+	handleLogin(){
+		var value = document.getElementById("username").value;
+		this.props.login(value);
+		if(value)
+			browserHistory.push('/chat')
+	}
+
+	render(){
+    	return(
       <div>
-        <h1 style={{textAlign:'center'}}> You are at the home page</h1>
-        <p style={{padding:'0px 5px',textAlign:'center'}}>Welcome to the most simple, most basic React-Redux starter. The only one you'll ever need wooo!!</p>
+        <h1 style={{textAlign:'center'}}> Warble</h1>
+        <input id="username" type="text" placeholder="enter name"/>
+        <button onClick={this.handleLogin.bind(this)}>Enter</button>
+
+        <h1>{(this.props.username == null || ' ') ? 'No user' : this.props.username }</h1>
       </div>
     )
   }
 }
+
+function matchDispatchToProps(dispatch){
+	return bindActionCreators({login},dispatch);
+}
+
+function mapStateToProps(state){
+	return { username:state.username }
+}
+
+export default connect(mapStateToProps,matchDispatchToProps)(Home)
+
+
+

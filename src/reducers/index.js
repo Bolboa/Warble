@@ -21,20 +21,12 @@ var initialTasks = [
 
 const allReducers = combineReducers({
     headerTitle:()=>"Ese's React-Redux Beginner Starter Kit!",
-    tasks :(state=initialTasks, action) =>{
+    username:(state=null,action)=>{
       switch(action.type){
-        case "TOGGLE_COMPLETE":
-          return state.map((task,index)=>{
-            if(index === action.index){
-                var obj = Object.assign({},task,{
-                  completed:!task.completed
-                });
-                return obj;
-            }
-            return task
-          });
+        case "LOGIN":
+          return action.username
       }
-      return state
+      return state;
     }
 });
 

@@ -7,8 +7,8 @@ import { createStore } from 'redux'
 import allReducers from './reducers'
 
 import App from './containers/app'
-import TaskList from './containers/tasklist'
 import Home from './containers/home'
+import Chat from './containers/chat'
 
 
 require('./styles.scss');
@@ -20,9 +20,10 @@ render(
     <Router history = {browserHistory}>
       <Route path='/' component= {App}>
         <IndexRoute component={Home}/>
-        <Route path='/tasklist' component= {TaskList}/>
+      	 <Route path='/chat' component={ Chat } />
+      
       </Route>
-
+   
     </Router>
   </Provider>
 , document.getElementById('app'));

@@ -1,11 +1,10 @@
-const toggleComplete = index =>{
-  console.log()
-  return {
-    type:"TOGGLE_COMPLETE",
-    index
-  }
+const login = (username)=>{
+	return {
+		type: "LOGIN",
+		username
+	}
 }
 
 export {
-  toggleComplete
+  login
 }
