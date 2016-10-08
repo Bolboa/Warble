@@ -14,13 +14,14 @@ class Home extends Component {
 	}
 
 	render(){
+		console.log(this.props.username);
     	return(
       <div>
         <h1 style={{textAlign:'center'}}> Warble</h1>
         <input id="username" type="text" placeholder="enter name"/>
         <button onClick={this.handleLogin.bind(this)}>Enter</button>
 
-        <h1>{(this.props.username == null || ' ') ? 'No user' : this.props.username }</h1>
+        <h1>{(this.props.username == null || this.props.username == '') ? 'No user' : this.props.username }</h1>
       </div>
     )
   }
