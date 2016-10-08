@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "start": "if-env NODE_ENV=production && npm run start:prod || npm run start:dev",
-    "start:dev": "webpack-dev-server --inline --content-base public --history-api-fallback --open",
+    "start:dev": "node ./server",
     "start:prod": "webpack && node server.js"
   },
   "repository": {
@@ -24,7 +24,8 @@
     "react-dom": "^15.3.2",
     "react-redux": "^4.4.5",
     "react-router": "^2.8.1",
-    "redux": "^3.6.0"
+    "redux": "^3.6.0",
+    "socket.io": "^1.5.0"
   },
   "devDependencies": {
     "babel-core": "^6.17.0",
@@ -34,9 +35,12 @@
     "css-loader": "^0.25.0",
     "extract-text-webpack-plugin": "^1.0.1",
     "node-sass": "^3.10.1",
+    "react-hot-loader": "^3.0.0-beta.5",
     "sass-loader": "^4.0.2",
     "style-loader": "^0.13.1",
     "webpack": "^1.13.2",
-    "webpack-dev-server": "^1.16.1"
+    "webpack-dev-middleware": "^1.8.3",
+    "webpack-dev-server": "^1.16.1",
+    "webpack-hot-middleware": "^2.12.2"
   }
 }

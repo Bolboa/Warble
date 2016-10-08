@@ -13,6 +13,7 @@ import Chat from './containers/chat'
 
 require('./styles.scss');
 
+
 const store = createStore(allReducers);
 
 render(

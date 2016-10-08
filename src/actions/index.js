@@ -5,6 +5,15 @@ const login = (username)=>{
 	}
 }
 
-export {
-  login
+const connectSocket = (socket)=>{
+	return {
+		type:"CONNECT",
+		socket
+	}
 }
+
+export {
+  login,
+  connectSocket
+}
+

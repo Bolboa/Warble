@@ -1,26 +1,16 @@
 import {combineReducers} from 'redux'
 
-var initialTasks = [
-  {
-    task: "Wash the dishes",
-    completed: false
-  },
-  {
-    task: "Do your laundry",
-    completed: true
-  },
-  {
-    task: "Walk the dog",
-    completed: false
-  },
-  {
-    task: "Clean your room",
-    completed: true
-  }
-];
 
 const allReducers = combineReducers({
-    headerTitle:()=>"Ese's React-Redux Beginner Starter Kit!",
+
+    socket:(state=null, action)=> {
+      switch(action.type) {
+        case "CONNECT":
+          return action.socket;
+      }
+      return state;
+    },
+
     username:(state=null,action)=>{
       switch(action.type){
         case "LOGIN":

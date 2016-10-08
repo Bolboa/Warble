@@ -6,11 +6,11 @@ var extractCSS = new ExtractTextPlugin('styles.css',{
 });
 
 module.exports = {
-  entry: './src',
+  entry: ['webpack-hot-middleware/client','./src'],
 
   devtool: 'source-map',
   output: {
-    path:'public',
+    path:'/',
     filename: 'scripts/bundle.js',
     publicPath: '/'
   },
@@ -20,10 +20,7 @@ module.exports = {
       {
         test: /\.js$/,
         exclude: /node_modules/,
-        loader: 'babel-loader',
-        query:{
-          presets: ['es2015','react']
-        }
+        loaders: [  'babel?presets[]=es2015,presets[]=react']
       },
       {
           test: /\.scss$/,
@@ -37,6 +34,9 @@ module.exports = {
     new webpack.optimize.UglifyJsPlugin(),
     extractCSS
   ] : [
-    extractCSS
+    extractCSS,
+    new webpack.HotModuleReplacementPlugin(),
+    new webpack.NoErrorsPlugin()
+
   ]
 }
