@@ -57,23 +57,35 @@ Room.prototype = {
 
 
 io.on('connection', function(socket) {
-    console.log("hi");
+    
     socket.on('pID', function(data){
-    	rooms.forEach(function(room,index){
+    	var occupied = false
+    	rooms.every(function(room,index){
+    		console.log(index);
     		if(!room.isFull()){
-    			console.log("room not full");
+    			console.log("room not full " +index);
+    			occupied = true;
     			room.addUser(data);
     			socket.emit('joinRoom', room.space);
-    			console.log(JSON.stringify(rooms))
-    			return	
+    			console.log(JSON.stringify(rooms));
+    			
+    			return false;
     		}
-    	})
-    	console.log("herre");
-		var newRoom = new Room();
-		newRoom.addUser(data);
-		rooms.push(newRoom);
-		socket.emit('joinRoom',newRoom.space);
-		console.log(JSON.stringify(rooms))
+    		else {return true;}
+    		
+    		
+    	});
+    	
+	    	if (occupied == false) {
+	    		occupied = true;
+				var newRoom = new Room();
+				newRoom.addUser(data);
+				rooms.push(newRoom);
+				socket.emit('joinRoom',newRoom.space);
+				console.log(JSON.stringify(rooms));
+		
+		}
+    	
     });
    
 });
