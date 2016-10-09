@@ -59,7 +59,7 @@ class Chat extends Component {
 
 		peer.on('open', function(id) {
 			var self= this;
-			this.props.socket.emit('pID', id);
+			this.props.socket.emit('pID', [id]);
   			console.log('My peer ID is: ' + id);
   			this.props.socket.on('joinRoom', function(data) {
   				//console.log("someone joined");
