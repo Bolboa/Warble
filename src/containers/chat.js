@@ -3,7 +3,7 @@ import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
 import { browserHistory } from 'react-router'
 
-import { login } from '../actions'
+import { joinRoom } from '../actions'
 
 class Chat extends Component {
 	constructor(props){
@@ -11,7 +11,7 @@ class Chat extends Component {
 
 		this.localStream = '';
 		this.remoteStream = '';
-		
+
 	}
 
 	componentWillMount(){
@@ -30,7 +30,7 @@ class Chat extends Component {
 
 		// var peer = new Peer({
 		// 	host:'localhost',
-		// 	port:5000, 
+		// 	port:5000,
 		// 	path:'/',
 		// 	config:{'iceServers': [
 		// 		{url:'stun:stun01.sipphone.com'},
@@ -57,48 +57,69 @@ class Chat extends Component {
 
 		var peer = new Peer({key:'p73vkga2525fusor'});
 
-		peer.on('open', function(id) {
-			var self= this;
-			this.props.socket.emit('pID', [id]);
-  			console.log('My peer ID is: ' + id);
-  			this.props.socket.on('joinRoom', function(data) {
-  				//console.log("someone joined");
-  				data.forEach(function(user,index) {
-  					if (user != id) {
-  						console.log(user);
-						 var call = peer.call(user, self.localStream);
-						 call.on('stream', function(remoteStream) {
-						 	console.log("Got Stream " + user);
-						 	self.remoteStream=remoteStream;
-
-						    // Show stream in some video/canvas element.
-						    self.refs.remoteStream.src = window.URL.createObjectURL(self.remoteStream);
-						 });
-						peer.on('call', function(call) {
-							console.log("Got call " + user);
-						    call.answer(self.localStream); // Answer the call with an A/V stream.
-					
-						});
-					}  					
-  					//console.log(index);
-  				});
-  			});
+		//PEER2PEER EVENT HANDLERS
+		peer.on('connection',function(conn){
+			console.log('Connected to other user in p2p connection');
+			var call = peer.call(conn.peer,this.localStream);
 		}.bind(this));
+
+		peer.on('call',function(call){
+			var self = this;
+			call.answer(this.localStream);
+			call.on('stream',function(remoteStream){
+				console.log("Got Stream from peer! ");
+				self.remoteStream=remoteStream;
+
+				// Show stream in video/canvas element.
+				self.refs.remoteStream.src = window.URL.createObjectURL(self.remoteStream);
+			});
+		}.bind(this));
+
+		peer.on('open', function(id) {
+			console.log("Peer connection open");
+			var self= this;
+			this.props.socket.emit('pID', id);
+  			console.log('My PeerID is:', id);
+
+
+
+			//SOCKET EVENT HANDLERS
+			this.props.socket.on('joinRoom', function(data) {
+				console.log('Someone has joined room:',data.id);
+				console.log('Currently in the room:' ,data.space.toString());
+
+				//If not in a room join the room
+				if(!self.props.currentRoom)
+					self.props.joinRoom(data.id);
+
+				//If there are two people in the room then try to establish a connection with the other person
+				if(data.space.length === 2){
+					data.space.forEach(function(user, index){
+						if(user !== id){
+							peer.connect(user);
+						}
+					});
+				}
+			});
+
+
+		}.bind(this));
+
 
 
 	}
 
-	
+
 
 
 	render(){
     	return(
       <div>
  		<h1>Chat Lobby!</h1>
- 		<div>Welcome Warbler! {this.props.username}</div>
- 		<video ref="localStream" width="320" height="240" autoPlay></video>
+ 		<h2>Welcome Warbler, {this.props.username} <small>{ (!this.props.currentRoom) ? '...joining room' : `{ Room : ${this.props.currentRoom} }` }</small></h2>
+ 		<video ref="localStream" width="320" height="240" autoPlay muted></video>
  		<video ref="remoteStream" width="320" height="240" autoPlay></video>
- 		<button onClick={()=>{this.start(true)}}>CLICK ME</button>
+ 		<button >CLICK ME</button>
 
       </div>
     )
@@ -107,11 +128,11 @@ class Chat extends Component {
 }
 
 function matchDispatchToProps(dispatch){
-	return bindActionCreators({login},dispatch);
+	return bindActionCreators({joinRoom},dispatch);
 }
 
 function mapStateToProps(state){
-	return { username:state.username, socket:state.socket }
+	return { username:state.username, socket:state.socket, currentRoom:state.currentRoom}
 }
 
 export default connect(mapStateToProps,matchDispatchToProps)(Chat)

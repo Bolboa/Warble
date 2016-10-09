@@ -5,15 +5,22 @@ const login = (username)=>{
 	}
 }
 
-const connectSocket = (socket)=>{
+const connectSocket = (socket) =>{
 	return {
 		type:"CONNECT",
 		socket
 	}
 }
 
-export {
-  login,
-  connectSocket
+const joinRoom = (room) =>{
+	return {
+		type:"JOIN_ROOM",
+		room
+	}
 }
 
+export {
+  login,
+  connectSocket,
+  joinRoom
+}

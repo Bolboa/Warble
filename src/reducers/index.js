@@ -17,7 +17,19 @@ const allReducers = combineReducers({
           return action.username
       }
       return state;
-    }
+  },
+
+  currentRoom:(state=null,action)=>{
+      switch(action.type){
+        case "JOIN_ROOM":
+          return action.room
+      }
+      return state;
+  },
+
+  p2p:(state = null, action )=>{
+      return state
+  }
 });
 
 export default allReducers

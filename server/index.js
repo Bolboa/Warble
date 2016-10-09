@@ -30,12 +30,12 @@ app.get('*', function(req, res){
 	res.sendFile(path.resolve('public/index.html'));
 });
 
-var rooms = [];
+//User objects to represent current rooms;
+var rooms = {};
 
-var Room = function(){
-	this.id = Math.floor((Math.random() * 10000) + 1);;
+var Room = function(id){
+	this.id = id;
 	this.space = [];
-
 }
 
 Room.prototype = {
@@ -46,82 +46,68 @@ Room.prototype = {
 	},
 	addUser: function(id){
 		this.space.push(id);
-	},
-	getRoom:function(){
-		return this.space;
 	}
 }
 
 
-
-
-
 io.on('connection', function(socket) {
-    
+
     socket.on('pID', function(data){
-    	var occupied = false;
-    	console.log(data[0]);
-    	rooms.every(function(room,index){
-    		console.log(index);
-    		if(!room.isFull()){
-    			console.log("room not full " +index);
-    			occupied = true;
-    			room.addUser(data);
-    			data.push(room.id);
-    			data.push(socket.id);
-    			
-    			console.log(data.current);
-    			socket.emit('joinRoom', room.space);
-    			console.log(JSON.stringify(rooms));
-    			
-    			return false;
-    		}
-    		else {return true;}
-    		
-    		
-    	});
-    	
-	    	if (occupied == false) {
-	    		occupied = true;
-				var newRoom = new Room();
-				data.push(newRoom.id);
-    			data.push(socket.id);
-				newRoom.addUser(data);
-				rooms.push(newRoom);
-				socket.emit('joinRoom',newRoom.space);
-				console.log(JSON.stringify(rooms));
-		
+		socket.pID = data;
+		//Loop through the rooms and find one that has a vacant space.
+		//If there is no vacant rooms then create a new room.
+		//add yourself into the room and then emit to all users that you have joined the room
+    	for(var key in rooms){
+			var currRoom = rooms[key];
+			if(!currRoom.isFull()){
+				currRoom.addUser(data);
+				socket.join(currRoom.id);
+				socket.currentRoom = currRoom.id;
+
+				io.to(currRoom.id).emit('joinRoom',currRoom);
+				console.log(rooms);
+				return
+			}
 		}
-    	
+		var newRoom = new Room(Math.floor((Math.random() * 10000) + 1));
+		newRoom.addUser(data);
+		rooms[newRoom.id] = newRoom;
+		socket.join(newRoom.id);
+		socket.currentRoom = newRoom.id;
+		io.to(newRoom.id).emit('joinRoom',newRoom);
+		console.log(rooms);
     });
 
-    socket.on('disconnect', function(){
-    	console.log("disconnected");
-    	var indexToDel = '';
-    	rooms.every(function(room, index) {
+	// socket.on('leaveRoom',function(data){
+	// 	console.log('Socket:',socket.id,'left the server');
+	// 	var room = rooms[data.room];
+	// 	room.space.forEach(function(user,index){
+	// 		if(user === data.id){
+	// 			room.space.splice(index,1);
+	// 		}
+	// 	});
+	// 	console.log(rooms);
+	// });
 
-    		room.space.every(function(user, index_user){
-    			if (user[2] == socket.id) {
-    				indexToDel = index_user;
-    				console.log(indexToDel);
-    				room.space.splice(indexToDel, 1);
-    				
-    				return false;
-    			}
-    			return true;
-    			
-    		});
-    		
-    		
-    		return true;
+	socket.on('disconnect',function(){
+		console.log('Socket ID:',socket.id,'DISCONNECTED');
+
+		//protect server from wierd disconnects
+		if(socket.currentRoom){
+			//When a user disconnects find the room he is in then remove him from that room
+			var room = rooms[socket.currentRoom];
+			room.space.forEach(function(user,index){
+				if(user === socket.pID){
+					room.space.splice(index,1);
+				}
+			});
+		}
+
+		console.log(rooms);
+	})
 
 
-    	});
-    	
 
-    	console.log(JSON.stringify(rooms));
-    });
-   
 });
 
 
@@ -132,4 +118,3 @@ var PORT = process.env.PORT || 3000;
 server.listen(PORT, function(){
 	console.log("listening on port " + PORT);
 });
-
