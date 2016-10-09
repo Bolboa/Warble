@@ -33,7 +33,7 @@ app.get('*', function(req, res){
 var rooms = [];
 
 var Room = function(){
-	this.id = Math.random*5;
+	this.id = Math.floor((Math.random() * 10000) + 1);;
 	this.space = [];
 
 }
@@ -59,13 +59,18 @@ Room.prototype = {
 io.on('connection', function(socket) {
     
     socket.on('pID', function(data){
-    	var occupied = false
+    	var occupied = false;
+    	console.log(data[0]);
     	rooms.every(function(room,index){
     		console.log(index);
     		if(!room.isFull()){
     			console.log("room not full " +index);
     			occupied = true;
     			room.addUser(data);
+    			data.push(room.id);
+    			data.push(socket.id);
+    			
+    			console.log(data.current);
     			socket.emit('joinRoom', room.space);
     			console.log(JSON.stringify(rooms));
     			
@@ -79,6 +84,8 @@ io.on('connection', function(socket) {
 	    	if (occupied == false) {
 	    		occupied = true;
 				var newRoom = new Room();
+				data.push(newRoom.id);
+    			data.push(socket.id);
 				newRoom.addUser(data);
 				rooms.push(newRoom);
 				socket.emit('joinRoom',newRoom.space);
@@ -86,6 +93,33 @@ io.on('connection', function(socket) {
 		
 		}
     	
+    });
+
+    socket.on('disconnect', function(){
+    	console.log("disconnected");
+    	var indexToDel = '';
+    	rooms.every(function(room, index) {
+
+    		room.space.every(function(user, index_user){
+    			if (user[2] == socket.id) {
+    				indexToDel = index_user;
+    				console.log(indexToDel);
+    				room.space.splice(indexToDel, 1);
+    				
+    				return false;
+    			}
+    			return true;
+    			
+    		});
+    		
+    		
+    		return true;
+
+
+    	});
+    	
+
+    	console.log(JSON.stringify(rooms));
     });
    
 });
