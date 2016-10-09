@@ -1,5 +1,6 @@
 var webpack = require('webpack');
 var ExtractTextPlugin = require('extract-text-webpack-plugin');
+var path = require('path');
 
 var extractCSS = new ExtractTextPlugin('styles.css',{
   allChunks:true
@@ -10,7 +11,7 @@ module.exports = {
 
   devtool: 'source-map',
   output: {
-    path:'/',
+    path: path.resolve('public'),
     filename: 'scripts/bundle.js',
     publicPath: '/'
   },
@@ -20,7 +21,10 @@ module.exports = {
       {
         test: /\.js$/,
         exclude: /node_modules/,
-        loaders: [  'babel?presets[]=es2015,presets[]=react']
+        loader: 'babel-loader',
+        query:{
+           presets: ['react-hmre','es2015','react'],
+        }
       },
       {
           test: /\.scss$/,
