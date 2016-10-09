@@ -1,6 +1,15 @@
 var express = require('express');
 var path = require('path');
 const webpack = require('webpack');
+var mongoose = require('mongoose');
+var expressValidator = require('express-validator');
+var session = require('express-session');
+var flash = require('connect-flash');
+var passportLocalMongoose = require('passport-local-mongoose');
+var bcrypt = require('bcrypt-nodejs');
+var passport = require('passport');
+var bodyParser = require('body-parser');
+var LocalStrategy = require('passport-local').Strategy;
 
 var http = require('http');
 
@@ -9,6 +18,10 @@ const socketIO = require('socket.io');
 
 var app = express();
 var server = http.createServer(app);
+
+
+mongoose.connect('mongodb://localhost/users');
+var db = mongoose.connection;
 
 const io = socketIO(server);
 
@@ -24,11 +37,18 @@ app.use(webpackDevMiddleware(compiler, {
 }));
 
 app.use(webpackHotMiddleware(compiler));
+app.use(bodyParser());
+
+app.use(session({ secret: 'ilovescotchscotchyscotchscotch' })); // session secret
+app.use(passport.initialize());
+app.use(passport.session()); // persistent login sessions
+app.use(flash()); // use connect-flash for flash messages stored in session
+
+require('./routes/routes.js')(app, passport);
 
 
-app.get('*', function(req, res){
-	res.sendFile(path.resolve('public/index.html'));
-});
+
+
 
 var rooms = [];
 
@@ -133,3 +153,4 @@ server.listen(PORT, function(){
 	console.log("listening on port " + PORT);
 });
 
+module.exports = app;

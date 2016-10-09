@@ -19,7 +19,7 @@ const store = createStore(allReducers);
 render(
   <Provider store={store}>
     <Router history = {browserHistory}>
-      <Route path='/' component= {App}>
+      <Route path='/main' component= {App}>
         <IndexRoute component={Home}/>
       	 <Route path='/chat' component={ Chat } />
       

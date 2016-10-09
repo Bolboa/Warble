@@ -6,12 +6,15 @@ var extractCSS = new ExtractTextPlugin('styles.css',{
 });
 
 module.exports = {
-  entry: ['webpack-hot-middleware/client','./src'],
+  entry: {
+    a: './src',
+    b: './Authentication'
+  },
 
   devtool: 'source-map',
   output: {
     path:'/',
-    filename: 'scripts/bundle.js',
+    filename: 'scripts/[name].js',
     publicPath: '/'
   },
 
