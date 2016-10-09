@@ -5,7 +5,7 @@ const allReducers = combineReducers({
 
     socket:(state=null, action)=> {
       switch(action.type) {
-        case "CONNECT":
+        case "CONNECT_SOCKET":
           return action.socket;
       }
       return state;
@@ -27,8 +27,22 @@ const allReducers = combineReducers({
       return state;
   },
 
-  p2p:(state = null, action )=>{
-      return state
+  chatMessages:(state=[],action)=>{
+      switch(action.type){
+        case "PEER_MESSAGE":
+          return [...state, action.message];
+      }
+      return state;
+  },
+
+  p2p:(state={connected:false, conn:null},action)=>{
+      switch(action.type){
+        case "TOGGLE_P2P":
+            return Object.assign({},state,{connected:!state.connected});
+        case "ADD_P2PCONNECTION":
+            return Object.assign({},state,{conn:action.conn});
+      }
+      return state;
   }
 });
 
