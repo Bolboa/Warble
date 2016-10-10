@@ -10,7 +10,6 @@ import ChatBox from './chatbox'
 class Chat extends Component {
 	constructor(props){
 		super(props);
-
 		this.localStream = '';
 		this.remoteStream = '';
 		this.local2dContext ='';

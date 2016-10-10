@@ -22,24 +22,31 @@ ChatMessage.propTypes = {
 
 class ChatBox extends Component {
 
+    constructor(){
+        super();
+        this.state = {message:''}
+    }
+
     componentDidMount(){
         var self = this;
-        this.refs.messageBox.onkeypress = function(evt){
-            evt.preventDefault();
+    }
 
-            if(evt.key === 'Enter'){
-                console.log("Pressed enter")
-                console.log(self.props.p2p);
-                if(self.props.p2p.conn){
-                    var message = { type:'peerMessage', sender: self.props.username, message:this.value};
-                    console.log('Attempting to send message...')
-                    self.props.p2p.conn.send(message);
-                    self.props.getPeerMessage(message);
-                    this.value = '';
-                }
-            }
-            else{
-                this.value += evt.key;
+    handleTextAreaChange(evt){
+        this.setState({message:evt.target.value})
+    }
+
+    handleKeyPress(evt){
+        //console.log(`Which: ${evt.which}`,`KeyCode: ${evt.keyCode}`,`CharCode: ${evt.charCode}`,`Key: ${evt.key}`);
+        if(evt.which === 13){
+            evt.preventDefault();
+            console.log("Pressed enter")
+            console.log(this.props.p2p);
+            if(this.props.p2p.conn){
+                var message = { type:'peerMessage', sender: this.props.username, message:this.state.message};
+                console.log('Attempting to send message...')
+                this.props.p2p.conn.send(message);
+                this.props.getPeerMessage(message);
+                evt.target.value = '';
             }
         }
     }
@@ -56,7 +63,7 @@ class ChatBox extends Component {
                         }) : 'No messages'
                     }
                 </ul>
-                <textarea ref='messageBox'></textarea>
+                <textarea ref='messageBox' onKeyPress = {this.handleKeyPress.bind(this)} onChange={this.handleTextAreaChange.bind(this)}></textarea>
 
             </div>
 		)

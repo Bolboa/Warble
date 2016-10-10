@@ -15,7 +15,7 @@ class App extends Component{
   render(){
     return (
       <div>
-      
+
         {this.props.children}
         <div style={{textAlign:'center',marginBottom:'5px'}}>
           <IndexLink activeClassName='link-active' to='/'>Home</IndexLink>
@@ -23,7 +23,7 @@ class App extends Component{
         </div>
 
 
-      
+
       </div>
     )
   }
@@ -35,7 +35,6 @@ function matchDispatchToProps(dispatch){
 function mapStateToProps(state){
   return {
       socket:state.socket
-    
   }
 }
 

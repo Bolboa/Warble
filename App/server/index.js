@@ -1,14 +1,13 @@
-var express = require('express');
-var path = require('path');
+const express = require('express');
+const path = require('path');
 const webpack = require('webpack');
-
-var http = require('http');
-
+const http = require('http');
 const socketIO = require('socket.io');
 
 
 var app = express();
 var server = http.createServer(app);
+
 
 const io = socketIO(server);
 
@@ -22,13 +21,15 @@ app.use(express.static(path.resolve('public')));
 app.use(webpackDevMiddleware(compiler, {
 	noInfo: true, publicPath: webpackConfig.output.publicPath
 }));
-
 app.use(webpackHotMiddleware(compiler));
 
-
 app.get('*', function(req, res){
-	res.sendFile(path.resolve('public/index.html'));
+    res.sendFile(path.resolve('public/index.html'));
 });
+
+
+
+
 
 //User objects to represent current rooms;
 var rooms = {};
