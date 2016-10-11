@@ -6,10 +6,10 @@ import { createStore } from 'redux'
 
 import allReducers from './reducers'
 
-import App from './containers/app'
 import Home from './containers/home'
 import Chat from './containers/chat'
-
+import Register from './containers/register'
+import Login from './containers/login'
 
 require('./styles.scss');
 
@@ -19,12 +19,10 @@ const store = createStore(allReducers);
 render(
   <Provider store={store}>
     <Router history = {browserHistory}>
-      <Route path='/' component= {App}>
-        <IndexRoute component={Home}/>
-      	 <Route path='/chat' component={ Chat } />
-      
-      </Route>
-   
+      <Route path='/' component= {Home}></Route>
+      <Route path='/chat' component={ Chat } />
+      <Route path='/login' component={ Login }/>
+      <Route path='/register' component = { Register } />
     </Router>
   </Provider>
 , document.getElementById('app'));

@@ -2,12 +2,13 @@ import React, { Component } from 'react'
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
 import { browserHistory } from 'react-router'
-import { login } from '../actions'
+import { login , connectSocket } from '../actions'
 
 class Home extends Component {
 	constructor(props) {
         super(props);
         this.state = { username:'', password:'',dumbuser:'' };
+		this.props.connectSocket(io());
     }
 
 	handleUsernameChange(e) {
@@ -64,11 +65,11 @@ class Home extends Component {
 }
 
 function matchDispatchToProps(dispatch){
-	return bindActionCreators({login},dispatch);
+	return bindActionCreators({login , connectSocket},dispatch);
 }
 
 function mapStateToProps(state){
-	return { username:state.username }
+	return { username:state.username, socket:state.socket }
 }
 
 export default connect(mapStateToProps,matchDispatchToProps)(Home)
