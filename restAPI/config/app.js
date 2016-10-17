@@ -2,7 +2,8 @@ var path = require('path');
 var User = require('../models/user');
 var LocalStrategy   = require('passport-local').Strategy;
 
-module.exports = function(app, passport) {
+
+module.exports = function(app, router, passport) {
 	
 
 
@@ -64,19 +65,38 @@ module.exports = function(app, passport) {
 			})
 		})
 	}));
+    //app.use(cors());
 
-
-	
-	app.post('/', function(req, res, next) {
+    router.use(function(req, res, next) {
+    // do logging
     
-    passport.authenticate('register', function(err, user, info) {
-        console.log("authenticate");
-        console.log(err);
-        console.log(user);
-        console.log(info);
-    })(req, res, next);
+    console.log('Something is happening.');
+    next(); // make sure we go to the next routes and don't stop here
 });
 
+router.get('/', function(req, res) {
+    res.json({ message: 'hooray! welcome to our api!' });
+});
 
+ router.options("*",function(req,res,next){
+  res.header("Access-Control-Allow-Origin", "*");
+        res.header("Access-Control-Allow-Headers", "X-Requested-With");
+        res.header("Access-Control-Allow-Headers", "Content-Type");
+        res.header("Access-Control-Allow-Methods", "PUT, GET, POST, DELETE, OPTIONS");
+   console.log("firg");
+    next();
+});
+
+router.route('/login')
+	.post(function(req, res, next) {
+
+		passport.authenticate('register', function(err, user, info){
+			console.log("authenticate");
+        	console.log(err);
+        	console.log(user);
+        	console.log(info);
+		})(req, res, next)
+});
+	
 	
 }

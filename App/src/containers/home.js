@@ -20,13 +20,25 @@ class Home extends Component {
     }
 
 	handleLogin(){
-		fetch('http://localhost:8080', {
-            method: 'post',
+
+
+
+		fetch('http://localhost:8080/api/login', {
+            method: 'POST',
+            headers: {
+    'Accept': 'application/json',
+    'Content-Type': 'application/json'
+  },
            	body: JSON.stringify({
              username: this.state.username,
              password: this.state.password
 		 	})
-	  	});
+	  	})
+	  	.then(json => json.json())
+
+	  	.catch(function(error) {
+	  		console.log("request failed");
+	  	})
 
 	}
 
@@ -36,14 +48,10 @@ class Home extends Component {
 	}
 
 	render(){
-		//console.log(this.state.username);
-		//console.log(this.props.username);
+
     	return(
 	      <div>
-			  <section>
-				  <h1>Warble</h1>
-			  </section>
-		     <form onSubmit={this.handleLogin.bind(this)} action="/" method="post">
+		     <div className="loginForm">
 			    <div>
 			        <label>Username:</label>
 			        <input type="text" name="username"  onChange={this.handleUsernameChange.bind(this)}/>
@@ -53,9 +61,10 @@ class Home extends Component {
 			        <input type="password" name="password" onChange={this.handlePasswordChange.bind(this)}/>
 			    </div>
 			    <div>
-			        <input type="submit" value="Log In"/>
+			        <button onClick={this.handleLogin.bind(this)}>Login</button>
 			    </div>
-			</form>
+			</div>
+
 			<br/>
 			<div>
 				<input type='text' ref='dumblogin' onChange={ (evt)=>{this.setState({ dumbuser: evt.target.value })} } ></input>
