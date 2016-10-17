@@ -40,6 +40,9 @@ class Home extends Component {
 		//console.log(this.props.username);
     	return(
 	      <div>
+			  <section>
+				  <h1>Warble</h1>
+			  </section>
 		     <form onSubmit={this.handleLogin.bind(this)} action="/" method="post">
 			    <div>
 			        <label>Username:</label>
@@ -59,6 +62,7 @@ class Home extends Component {
 				<button onClick={this.handleDumbLogin.bind(this)}>Dumb Login</button>
 			</div>
 	        <h1>{(this.props.username == null || this.props.username == '') ? 'No user' : this.props.username }</h1>
+
 	      </div>
     	)
   }

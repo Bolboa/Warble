@@ -1,3 +1,6 @@
+$blue: #004FF9;
+$yellow: #FFF94C;
+
 body,html {
   margin:0;
 }
@@ -31,6 +34,10 @@ a:active, a:visited {
     bottom:0;
     left:0;
     flex-direction: column;
-    background: url('/assets/images/216H.jpg') no-repeat fixed;
+    background: $blue; /* For browsers that do not support gradients */
+    background: -webkit-linear-gradient(to right,$yellow,$blue); /* For Safari 5.1 to 6.0 */
+    background: -o-linear-gradient(to right,$yellow, $blue); /* For Opera 11.1 to 12.0 */
+    background: -moz-linear-gradient(to right,$yellow, $blue); /* For Firefox 3.6 to 15 */
+    background: linear-gradient(to right,$yellow, $blue); /* Standard syntax */
     background-size:cover;
 }
