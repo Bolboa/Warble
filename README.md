@@ -1,4 +1,4 @@
-# Warble
+# WARBLE
 
 
 ## Matching flow
@@ -19,6 +19,7 @@
 
 //Searching algorithm
 - Look in { Search Pool }, 
+```
   if ( Search Pool > 0 ){
     search { Search Pool } backwards for target{
       if(target !in user.cache){
@@ -34,7 +35,7 @@
   }
   else
     put user in Search Pool
-      
-    
+```
+# WARBLE   
   
 
