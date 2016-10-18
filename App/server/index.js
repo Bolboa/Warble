@@ -52,9 +52,30 @@ Room.prototype = {
 
 
 io.on('connection', function(socket) {
+	console.log("Socket connected, id:", socket.id.slice(8));
+	console.log("All sockets:", Object.keys(io.sockets.connected) );
+
+	function leaveRoom(){
+		if(socket.currentRoom){
+			//When a user disconnects find the room he is in then remove him from that room
+			console.log("Socket is leaving current room");
+			var room = rooms[socket.currentRoom];
+			socket.leave(socket.currentRoom);
+			room.space.forEach(function(user,index){
+				if(user === socket.pID){
+					room.space.splice(index,1);
+				}
+			});
+			socket.pID = null;
+			socket.currentRoom = null;
+		}
+
+		console.log('Rooms>>>\n','\t',rooms);
+	}
 
     socket.on('pID', function(data){
 		socket.pID = data;
+		console.log("Socket is joining room....");
 		//Loop through the rooms and find one that has a vacant space.
 		//If there is no vacant rooms then create a new room.
 		//add yourself into the room and then emit to all users that you have joined the room
@@ -66,7 +87,7 @@ io.on('connection', function(socket) {
 				socket.currentRoom = currRoom.id;
 
 				io.to(currRoom.id).emit('joinRoom',currRoom);
-				console.log(rooms);
+				console.log('Rooms>>>\n','\t',rooms);
 				return
 			}
 		}
@@ -76,36 +97,19 @@ io.on('connection', function(socket) {
 		socket.join(newRoom.id);
 		socket.currentRoom = newRoom.id;
 		io.to(newRoom.id).emit('joinRoom',newRoom);
-		console.log(rooms);
+		console.log('Rooms>>>\n','\t',rooms);
     });
 
-	// socket.on('leaveRoom',function(data){
-	// 	console.log('Socket:',socket.id,'left the server');
-	// 	var room = rooms[data.room];
-	// 	room.space.forEach(function(user,index){
-	// 		if(user === data.id){
-	// 			room.space.splice(index,1);
-	// 		}
-	// 	});
-	// 	console.log(rooms);
-	// });
+	socket.on('leaveRoom',function(data){
+		console.log('Socket:',socket.id,'left the room');
+		leaveRoom();
+	});
 
 	socket.on('disconnect',function(){
 		console.log('Socket ID:',socket.id,'DISCONNECTED');
-
-		//protect server from wierd disconnects
-		if(socket.currentRoom){
-			//When a user disconnects find the room he is in then remove him from that room
-			var room = rooms[socket.currentRoom];
-			room.space.forEach(function(user,index){
-				if(user === socket.pID){
-					room.space.splice(index,1);
-				}
-			});
-		}
-
-		console.log(rooms);
-	})
+		leaveRoom();
+		console.log("All sockets:", Object.keys(io.sockets.connected) );
+	});
 
 
 

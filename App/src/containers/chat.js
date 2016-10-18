@@ -1,27 +1,40 @@
 import React, { Component } from 'react'
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
-import { browserHistory } from 'react-router'
+import { browserHistory, Link } from 'react-router'
 
-import { joinRoom, toggleP2pConnection, addP2pConnection, getPeerMessage } from '../actions'
+import { joinRoom, addP2pConnection, getPeerMessage , removeP2pConnection} from '../actions'
 
 import ChatBox from './chatbox'
 
 class Chat extends Component {
 	constructor(props){
 		super(props);
+		console.log('at the constructor');
+		this.peer = '';
+		this.localCanvasLoop = '';
+		this.remoteCanvasLoop = '';
 		this.localStream = '';
 		this.remoteStream = '';
 		this.local2dContext ='';
 		this.remote2dContext = '';
+
 	}
 
-	componentWillMount(){
-		if(this.props.username == null)
-			browserHistory.push('/')
+	cleanUp(){
+		if(this.props.socket){
+			this.props.socket.emit('leaveRoom',{ id:this.peer.id, room:this.props.currentRoom })
+			this.peer.destroy();
+		}
+	}
+
+	componentWillUnmount(){
+		console.log("Component is unmmounting");
+		this.cleanUp();
 	}
 
 	componentDidMount() {
+
 		var self = this;
 		this.local2dContext = this.refs.localCanvas.getContext('2d');
 		this.remote2dContext = this.refs.remoteCanvas.getContext('2d');
@@ -42,19 +55,19 @@ class Chat extends Component {
 
 
 		//VIDEO -> CANVAS
-		this.refs.localStream.addEventListener('play',function(){
+		self.refs.localStream.addEventListener('play',function(){
 			if(!this.paused && !this.ended){
 				window.setInterval(streamVideoToCanvas,10,this,self.local2dContext);
 			}
 		});
 
-		this.refs.remoteStream.addEventListener('play',function(){
+		self.refs.remoteStream.addEventListener('play',function(){
 			if(!this.paused && !this.ended){
 				window.setInterval(streamVideoToCanvas,10,this,self.remote2dContext);
 			}
 		});
 
-		var peer = new Peer({
+		self.peer = new Peer({
 			key:'p73vkga2525fusor',
 			config:{'iceServers': [
 				{url:'stun:stun01.sipphone.com'},
@@ -79,17 +92,18 @@ class Chat extends Component {
 			]}
 		});
 
+
+
 		//PEER2PEER EVENT HANDLERS
-		peer.on('connection',function(conn){
+		self.peer.on('connection',function(conn){
 			console.log('Connected to other user in p2p connection');
-			this.props.toggleP2pConnection();
 			this.props.addP2pConnection(conn);
-			var call = peer.call(conn.peer,this.localStream);
+			var call = self.peer.call(conn.peer,this.localStream);
 
 
 		}.bind(this));
 
-		peer.on('call',function(call){
+		self.peer.on('call',function(call){
 			var self = this;
 			call.answer(this.localStream);
 			call.on('stream',function(remoteStream){
@@ -101,9 +115,9 @@ class Chat extends Component {
 			});
 		}.bind(this));
 
-		peer.on('open', function(id) {
+		self.peer.on('open', function(id) {
 			console.log("Peer connection open");
-			var self= this;
+			console.log(self.peer);
 			this.props.socket.emit('pID', id);
   			console.log('My PeerID is:', id);
 
@@ -112,7 +126,7 @@ class Chat extends Component {
 			//SOCKET EVENT HANDLERS
 			this.props.socket.on('joinRoom', function(data) {
 				console.log('Someone has joined room:',data.id);
-				console.log('Currently in the room:' ,data.space.toString());
+				console.log('Peers currently in the room:' ,data.space.toString());
 
 				//If not in a room join the room
 				if(!self.props.currentRoom)
@@ -122,7 +136,8 @@ class Chat extends Component {
 				if(data.space.length === 2){
 					data.space.forEach(function(user, index){
 						if(user !== id){
-							var conn = peer.connect(user);
+							var conn = self.peer.connect(user);
+							console.log(self.peer);
 
 							//CONNECTION EVENT HANDLERS
 							conn.on('data',function(data){
@@ -131,6 +146,11 @@ class Chat extends Component {
 									case 'peerMessage':
 										self.props.getPeerMessage(data);
 								}
+							});
+
+							conn.on('close',function(){
+								console.log("Data connection is closed");
+								self.props.removeP2pConnection();
 							});
 						}
 					});
@@ -151,6 +171,7 @@ class Chat extends Component {
 			  <div className='video-section'>
 				  <canvas ref ='localCanvas' className = 'localCanvas' width="320" height="240"></canvas>
 				  <canvas ref ='remoteCanvas' className = 'localCanvas' width="320" height="240"></canvas>
+				  <Link to ="/" >Home</Link>
 			  </div>
 			<ChatBox />
 
@@ -167,7 +188,7 @@ class Chat extends Component {
 
 
 function matchDispatchToProps(dispatch){
-	return bindActionCreators({joinRoom, toggleP2pConnection, addP2pConnection, getPeerMessage},dispatch);
+	return bindActionCreators({joinRoom, addP2pConnection, getPeerMessage, removeP2pConnection},dispatch);
 }
 
 function mapStateToProps(state){

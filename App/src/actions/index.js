@@ -19,15 +19,16 @@ const joinRoom = (room) =>{
 	}
 }
 
-const toggleP2pConnection = ()=>{
-	 return {
-		 type:"TOGGLE_P2P"
-	 }
- }
 const addP2pConnection = (conn)=>{
 	return {
 		type: "ADD_P2PCONNECTION" ,
 		conn
+	}
+}
+
+const removeP2pConnection = () =>{
+	return {
+		type: "REMOVE_CONNECTION"
 	}
 }
 
@@ -42,7 +43,7 @@ export {
   login,
   connectSocket,
   joinRoom,
-  toggleP2pConnection,
   addP2pConnection,
+  removeP2pConnection,
   getPeerMessage
 }

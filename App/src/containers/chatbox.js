@@ -26,7 +26,7 @@ class ChatBox extends Component {
             evt.preventDefault();
             console.log("Pressed enter")
             console.log(this.props.p2p);
-            if(this.props.p2p.conn){
+            if(this.props.p2p.conn && this.props.p2p.conn.open){
                 var message = { type:'peerMessage', sender: this.props.username, message:this.state.message};
                 console.log('Attempting to send message...')
                 this.props.p2p.conn.send(message);
