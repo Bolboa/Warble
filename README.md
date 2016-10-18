@@ -21,16 +21,16 @@
 - Look in { Search Pool }, 
 ```
   if ( Search Pool > 0 ){
-    search { Search Pool } backwards for target{
+    search { Search Pool } for target{
       if(target !in user.cache){
-        set target.available = false
+        set target.available = false 
         if(attemptConnect(target).isSuccessful) //
           remove target from { Search Pool }
           return
       }
-      //If can't find any fresh targets then clear user cache and enter Searching Pool for 5 seconds
+      //If can't find any fresh targets then clear user cache and enter Searching Pool for 10 seconds
       { Search Pool }.push(user)
-      //after 10 seconds searching loop.
+      //after 10 seconds do active search again.
     }
   }
   else
