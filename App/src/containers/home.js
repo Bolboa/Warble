@@ -3,26 +3,58 @@ import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
 import { browserHistory } from 'react-router'
 import { login , connectSocket } from '../actions'
+import Login from '../components/loginForm'
+import Register from '../components/registerForm'
 
 class Home extends Component {
 	constructor(props) {
         super(props);
-        this.state = { username:'', password:'',dumbuser:'' };
+        this.state = { username_login:'', password_login:'', username_register:'', password_register:'',dumbuser:'' };
 		this.props.connectSocket(io());
     }
 
-	handleUsernameChange(e) {
-        this.setState({username: e.target.value});
+	handleUsernameChangeRegister(e) {
+        this.setState({username_register: e.target.value});
     }
 
-    handlePasswordChange(e) {
-       this.setState({password: e.target.value});
+    handlePasswordChangeRegister(e) {
+       this.setState({password_register: e.target.value});
     }
+
+    handlePasswordChangeLogin(e) {
+       this.setState({password_login: e.target.value});
+    }
+
+    handleUsernameChangeLogin(e) {
+       this.setState({username_login: e.target.value});
+    }
+
+	handleRegister(){
+
+		
+		
+		fetch('http://localhost:8080/api/register', {
+            method: 'POST',
+            headers: {
+    'Accept': 'application/json',
+    'Content-Type': 'application/json'
+  },
+           	body: JSON.stringify({
+             username: this.state.username_register,
+             password: this.state.password_register
+		 	})
+	  	})
+	  	.then(json => json.json())
+	  	
+	  	.catch(function(error) {
+	  		console.log("request failed");
+	  	})
+
+	}
 
 	handleLogin(){
 
-
-
+		
 		fetch('http://localhost:8080/api/login', {
             method: 'POST',
             headers: {
@@ -30,12 +62,12 @@ class Home extends Component {
     'Content-Type': 'application/json'
   },
            	body: JSON.stringify({
-             username: this.state.username,
-             password: this.state.password
+             username: this.state.username_login,
+             password: this.state.password_login
 		 	})
 	  	})
 	  	.then(json => json.json())
-
+	  	
 	  	.catch(function(error) {
 	  		console.log("request failed");
 	  	})
@@ -48,30 +80,20 @@ class Home extends Component {
 	}
 
 	render(){
-
+		
     	return(
 	      <div>
-		     <div className="loginForm">
-			    <div>
-			        <label>Username:</label>
-			        <input type="text" name="username"  onChange={this.handleUsernameChange.bind(this)}/>
-			    </div>
-			    <div>
-			        <label>Password:</label>
-			        <input type="password" name="password" onChange={this.handlePasswordChange.bind(this)}/>
-			    </div>
-			    <div>
-			        <button onClick={this.handleLogin.bind(this)}>Login</button>
-			    </div>
-			</div>
-
+		     
+	      <Register submit={this.handleRegister.bind(this)} password={this.handlePasswordChangeRegister.bind(this)} username={this.handleUsernameChangeRegister.bind(this)}/>
+	      <Login submit={this.handleLogin.bind(this)} password={this.handlePasswordChangeLogin.bind(this)} username={this.handleUsernameChangeLogin.bind(this)}/>
+			
+			
 			<br/>
 			<div>
 				<input type='text' ref='dumblogin' onChange={ (evt)=>{this.setState({ dumbuser: evt.target.value })} } ></input>
 				<button onClick={this.handleDumbLogin.bind(this)}>Dumb Login</button>
 			</div>
 	        <h1>{(this.props.username == null || this.props.username == '') ? 'No user' : this.props.username }</h1>
-
 	      </div>
     	)
   }

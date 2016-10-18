@@ -23,7 +23,7 @@ module.exports = function(app, router, passport) {
     passport.use('register', new LocalStrategy({
     	usernameField:'username',
     	passwordField:'password',
-		passReqToCallback : true
+		passReqToCallback : true // allows us to pass back the entire request to the callback
 	},
 	function(req, username, password, done) {
 		
@@ -65,6 +65,31 @@ module.exports = function(app, router, passport) {
 			})
 		})
 	}));
+
+    passport.use('local-login', new LocalStrategy({
+    	usernameField:'username',
+    	passwordField:'password',
+    	passReqToCallback: true // allows us to pass back the entire request to the callback
+    },
+    function(req, username, password, done) {
+    	console.log(password + "here");
+    	 // we are checking to see if the user trying to login already exists
+    	 User.findOne({'username': username}, function(err, user){
+    	 	// if there are any errors, return the error before anything else
+    	 	console.log(password);
+            if (err)
+                return done(err);
+            if (!user)
+            	return done(null, false, req.flash('loginMessage', 'No user found.'));
+            // if the user is found but the password is wrong
+            if (!user.validPassword(password))
+            	return done(null, false, req.flash('loginMessage', 'Oops! Wrong password.'));
+
+            return done(null, user);
+
+    	 })
+    }));
+
     //app.use(cors());
 
     router.use(function(req, res, next) {
@@ -83,14 +108,24 @@ router.get('/', function(req, res) {
         res.header("Access-Control-Allow-Headers", "X-Requested-With");
         res.header("Access-Control-Allow-Headers", "Content-Type");
         res.header("Access-Control-Allow-Methods", "PUT, GET, POST, DELETE, OPTIONS");
-   console.log("firg");
     next();
+});
+
+router.route('/register')
+	.post(function(req, res, next) {
+		//console.log(req.body.username);
+		passport.authenticate('register', function(err, user, info){
+			console.log("authenticate");
+        	console.log(err);
+        	console.log(user);
+        	console.log(info);
+		})(req, res, next)
 });
 
 router.route('/login')
 	.post(function(req, res, next) {
-
-		passport.authenticate('register', function(err, user, info){
+		console.log(req.body);
+		passport.authenticate('local-login', function(err, user, info){
 			console.log("authenticate");
         	console.log(err);
         	console.log(user);
