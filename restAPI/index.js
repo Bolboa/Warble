@@ -10,7 +10,7 @@ var cookieParser = require('cookie-parser');
 var bodyParser   = require('body-parser');
 var session      = require('express-session');
 
-mongoose.connect('mongodb://localhost/users');
+mongoose.connect('mongodb://Savage Tekk:2savages@ds061506.mlab.com:61506/user');
 var db = mongoose.connection;
 
 
