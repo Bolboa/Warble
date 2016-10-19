@@ -8,7 +8,8 @@ var flash    = require('connect-flash');
 var morgan       = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser   = require('body-parser');
-var session      = require('express-session');
+var jwt = require('jwt-simple');
+var session = require('express-session');
 
 mongoose.connect('mongodb://Savage Tekk:2savages@ds061506.mlab.com:61506/user');
 var db = mongoose.connection;
@@ -39,7 +40,7 @@ app.use(passport.session()); // persistent login sessions
 app.use(flash()); // use connect-flash for flash messages stored in session
 //app.use(cors());
 // routes ======================================================================
-require('./config/app.js')(app, router, passport); // load our routes and pass in our app and fully configured passport
+require('./config/app.js')(app, router, passport, jwt); // load our routes and pass in our app and fully configured passport
 
 
 

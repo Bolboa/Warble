@@ -1,11 +1,11 @@
 var path = require('path');
 var User = require('../models/user');
 var LocalStrategy   = require('passport-local').Strategy;
+var moment = require('moment');
 
-
-module.exports = function(app, router, passport) {
+module.exports = function(app, router, passport, jwt) {
 	
-
+	app.set('jwtTokenSecret', 'YOUR_SECRET_STRING');
 
 
 
@@ -49,7 +49,7 @@ module.exports = function(app, router, passport) {
 					newUser.username = username;
 					
 					newUser.password = newUser.generateHash(password);
-					//console.log("hgeeer");
+					
 					//save the user
 					newUser.save(function(err) {
 						
@@ -127,9 +127,18 @@ router.route('/login')
 		console.log(req.body);
 		passport.authenticate('local-login', function(err, user, info){
 			console.log("authenticate");
-        	console.log(err);
-        	console.log(user);
-        	console.log(info);
+			if (err) {return next(err)}
+			if (!user) {
+				return res.json(401, { error: 'message' });
+			}
+			var expires = moment().add('days', 7).valueOf();
+			var token = jwt.encode({
+  				iss: user.username,
+  				exp: expires
+			}, app.get('jwtTokenSecret'));
+        	//console.log(err);
+        	console.log(token + "this token");
+        	//console.log(info);
 		})(req, res, next)
 });
 	

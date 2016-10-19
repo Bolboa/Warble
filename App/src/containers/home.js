@@ -9,8 +9,10 @@ import Register from '../components/registerForm'
 class Home extends Component {
 	constructor(props) {
         super(props);
-        this.state = { dumbuser:'' };
+         this.state = { username_login:'', password_login:'', username_register:'', password_register:'',dumbuser:'' };
     }
+
+
 
 	componentDidMount(){
 		if(!this.props.socket){
@@ -19,6 +21,57 @@ class Home extends Component {
 		}
 	}
 
+	handleUsernameChangeRegister(e) {
+        this.setState({username_register: e.target.value});
+      }
+      handlePasswordChangeRegister(e) {
+       this.setState({password_register: e.target.value});
+      }
+       handlePasswordChangeLogin(e) {
+        this.setState({password_login: e.target.value});
+     }
+
+     handleUsernameChangeLogin(e) {
+        this.setState({username_login: e.target.value});
+     }
+
+     handleRegister(){
+     	fetch('http://localhost:8080/api/register', {
+              method: 'POST',
+              headers: {
+      'Accept': 'application/json',
+      'Content-Type': 'application/json'
+    },
+             	body: JSON.stringify({
+             		username: this.state.username_register,
+ 	             password: this.state.password_register
+ 	             })
+  	  	})
+  	  	.then(json => json.json())
+  	  	.catch(function(error) {
+ 	  		console.log("request failed");
+ 	  	})
+  	  }
+  	  handleLogin(){
+ 
+ 		
+ 		fetch('http://localhost:8080/api/login', {
+             method: 'POST',
+             headers: {
+     'Accept': 'application/json',
+     'Content-Type': 'application/json'
+   },
+            	body: JSON.stringify({
+              username: this.state.username_login,
+              password: this.state.password_login
+ 		 	})
+ 	  	})
+ 	  	.then(json => json.json())
+ 	  	
+  	  	.catch(function(error) {
+  	  		console.log("request failed");
+  	  	})
+  	  }
 
 	handleDumbLogin(){
 		if(this.state.dumbuser && this.state.dumbuser !== ''  ){
@@ -31,6 +84,8 @@ class Home extends Component {
 
     	return(
 			<div>
+			<Register submit={this.handleRegister.bind(this)} password={this.handlePasswordChangeRegister.bind(this)} username={this.handleUsernameChangeRegister.bind(this)}/>
+ 		      <Login submit={this.handleLogin.bind(this)} password={this.handlePasswordChangeLogin.bind(this)} username={this.handleUsernameChangeLogin.bind(this)}/>
 				{
 					(this.props.username) ? <Link to='/chat'>Find a chat!</Link> :  (
 						<div>
