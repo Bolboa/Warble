@@ -12,13 +12,6 @@ const connectSocket = (socket) =>{
 	}
 }
 
-const joinRoom = (room) =>{
-	return {
-		type:"JOIN_ROOM",
-		room
-	}
-}
-
 const addP2pConnection = (conn)=>{
 	return {
 		type: "ADD_P2PCONNECTION" ,
@@ -39,11 +32,17 @@ const getPeerMessage = (message)=>{
 	}
 }
 
+const clearPeerMessage = ()=>{
+	return {
+		type: 'CLEAR_PEER_MESSAGE'
+	}
+}
+
 export {
   login,
   connectSocket,
-  joinRoom,
   addP2pConnection,
   removeP2pConnection,
-  getPeerMessage
+  getPeerMessage,
+  clearPeerMessage
 }

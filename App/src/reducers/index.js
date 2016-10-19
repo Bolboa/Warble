@@ -27,20 +27,14 @@ const allReducers = combineReducers({
           return action.username
       }
       return state;
-    },
-
-  currentRoom:(state=null,action)=>{
-      switch(action.type){
-        case "JOIN_ROOM":
-          return action.room
-      }
-      return state;
   },
 
   chatMessages:(state=[],action)=>{
       switch(action.type){
         case "PEER_MESSAGE":
           return [...state, action.message];
+        case "CLEAR_PEER_MESSAGE":
+          return [];
       }
       return state;
   }
