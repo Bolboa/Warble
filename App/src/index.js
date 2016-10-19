@@ -16,11 +16,18 @@ require('./styles.scss');
 
 const store = createStore(allReducers);
 
+function authenticateUser(nextState, replace){
+    //Authenticate routes
+    var state = store.getState();
+    if(!state.socket || !state.username)
+        replace("/");
+}
+
 render(
   <Provider store={store}>
     <Router history = {browserHistory}>
       <Route path='/' component= { Home }></Route>
-      <Route path='/chat' component={ Chat } />
+      <Route path='/chat' onEnter={authenticateUser } component={ Chat } />
       <Route path='/login' component={ Login }/>
       <Route path='/register' component = { Register } />
     </Router>

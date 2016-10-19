@@ -3,7 +3,7 @@ const path = require('path');
 const webpack = require('webpack');
 const http = require('http');
 const socketIO = require('socket.io');
-
+var _ = require('lodash');
 
 var app = express();
 var server = http.createServer(app);
@@ -28,90 +28,91 @@ app.get('*', function(req, res){
 });
 
 
-
-
-
-//User objects to represent current rooms;
-var rooms = {};
-
-var Room = function(id){
-	this.id = id;
-	this.space = [];
+/*
+User Object will have:
+	pID...peer id
+	sID..socket id
+	availabe.. if they are available
+	userCache...cache containing spoken to users, location info etc
+*/
+var SearchPool = function(){
+	this.searching = {};
+	this.timeouts = {};
 }
 
-Room.prototype = {
-	constructor: Room,
-	isFull: function(){
-		if(this.space.length == 2) return true
+SearchPool.prototype = {
+	constructor: SearchPool,
+	isEmpty: function(){
+		if( _.isEmpty(this.searching) ) return true;
 		else return false;
 	},
-	addUser: function(id){
-		this.space.push(id);
+	activeSearch:function(user){
+		console.log("Trying active search for pID:",user.pID);
+		if(!this.isEmpty()){
+			_.forEachRight(this.searching , (value,key) =>{
+				//No cache implementation yet
+				if(value.available){
+					value.available = false;
+					io.to(user.sID).emit("pID",value.pID);
+					io.to(value.sID).emit("pID",user.pID);
+
+					delete this.searching[key];
+					clearTimeout(this.timeouts[key]);
+					return ;
+				}
+
+			});
+		}
+		else{
+			this.passiveSearch(user);
+		}
+	},
+	passiveSearch:function(user){
+		console.log("Trying passive search for pID:",user.pID);
+		this.searching[user.pID] = user;
+		this.timeouts[user.pID] = setTimeout( ()=>{
+			delete this.searching[user.pID];
+			this.activeSearch(user);
+		} , 5000)
+	},
+	removeUser(userPID){
+		clearTimeout(this.timeouts[userPID]);
+		delete this.searching[userPID];
 	}
+
 }
 
+var globalPool = new SearchPool();
+console.log(globalPool);
 
 io.on('connection', function(socket) {
+	console.log("Socket connected, id:", socket.id);
+	console.log("All sockets:", Object.keys(io.sockets.connected) );
 
-    socket.on('pID', function(data){
-		socket.pID = data;
-		//Loop through the rooms and find one that has a vacant space.
-		//If there is no vacant rooms then create a new room.
-		//add yourself into the room and then emit to all users that you have joined the room
-    	for(var key in rooms){
-			var currRoom = rooms[key];
-			if(!currRoom.isFull()){
-				currRoom.addUser(data);
-				socket.join(currRoom.id);
-				socket.currentRoom = currRoom.id;
-
-				io.to(currRoom.id).emit('joinRoom',currRoom);
-				console.log(rooms);
-				return
-			}
-		}
-		var newRoom = new Room(Math.floor((Math.random() * 10000) + 1));
-		newRoom.addUser(data);
-		rooms[newRoom.id] = newRoom;
-		socket.join(newRoom.id);
-		socket.currentRoom = newRoom.id;
-		io.to(newRoom.id).emit('joinRoom',newRoom);
-		console.log(rooms);
-    });
-
-	// socket.on('leaveRoom',function(data){
-	// 	console.log('Socket:',socket.id,'left the server');
-	// 	var room = rooms[data.room];
-	// 	room.space.forEach(function(user,index){
-	// 		if(user === data.id){
-	// 			room.space.splice(index,1);
-	// 		}
-	// 	});
-	// 	console.log(rooms);
-	// });
+	socket.on('pID', function(data){
+		console.log("Received pID", data.pID);
+		globalPool.activeSearch(data);
+		console.log('Global Pool:\n',globalPool.searching);
+		socket.pID = data.pID;
+	});
 
 	socket.on('disconnect',function(){
 		console.log('Socket ID:',socket.id,'DISCONNECTED');
-
-		//protect server from wierd disconnects
-		if(socket.currentRoom){
-			//When a user disconnects find the room he is in then remove him from that room
-			var room = rooms[socket.currentRoom];
-			room.space.forEach(function(user,index){
-				if(user === socket.pID){
-					room.space.splice(index,1);
-				}
-			});
+		console.log("All sockets:", Object.keys(io.sockets.connected) );
+		if(socket.pID){
+			globalPool.removeUser(socket.pID);
 		}
+	});
 
-		console.log(rooms);
+	socket.on('leaveSearch',function(){
+		if(socket.pID){
+			globalPool.removeUser(socket.pID);
+		}
 	})
 
 
 
 });
-
-
 
 
 var PORT = process.env.PORT || 3000;
