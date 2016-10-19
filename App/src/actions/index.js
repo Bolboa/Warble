@@ -12,22 +12,16 @@ const connectSocket = (socket) =>{
 	}
 }
 
-const joinRoom = (room) =>{
-	return {
-		type:"JOIN_ROOM",
-		room
-	}
-}
-
-const toggleP2pConnection = ()=>{
-	 return {
-		 type:"TOGGLE_P2P"
-	 }
- }
 const addP2pConnection = (conn)=>{
 	return {
 		type: "ADD_P2PCONNECTION" ,
 		conn
+	}
+}
+
+const removeP2pConnection = () =>{
+	return {
+		type: "REMOVE_CONNECTION"
 	}
 }
 
@@ -38,11 +32,17 @@ const getPeerMessage = (message)=>{
 	}
 }
 
+const clearPeerMessage = ()=>{
+	return {
+		type: 'CLEAR_PEER_MESSAGE'
+	}
+}
+
 export {
   login,
   connectSocket,
-  joinRoom,
-  toggleP2pConnection,
   addP2pConnection,
-  getPeerMessage
+  removeP2pConnection,
+  getPeerMessage,
+  clearPeerMessage
 }

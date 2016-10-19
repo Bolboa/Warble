@@ -24,9 +24,7 @@ class ChatBox extends Component {
         //console.log(`Which: ${evt.which}`,`KeyCode: ${evt.keyCode}`,`CharCode: ${evt.charCode}`,`Key: ${evt.key}`);
         if(evt.which === 13){
             evt.preventDefault();
-            console.log("Pressed enter")
-            console.log(this.props.p2p);
-            if(this.props.p2p.conn){
+            if(this.props.p2p.conn && this.props.p2p.conn.open){
                 var message = { type:'peerMessage', sender: this.props.username, message:this.state.message};
                 console.log('Attempting to send message...')
                 this.props.p2p.conn.send(message);
@@ -38,8 +36,7 @@ class ChatBox extends Component {
 
 	render(){
 		return (
-			<div>
-                <h1>Chat Box</h1>
+			<div className='chat-section'>
                 <ul>
                     {
                         (this.props.messages && (this.props.messages.length > 0)) ?
@@ -48,7 +45,7 @@ class ChatBox extends Component {
                         }) : 'No messages'
                     }
                 </ul>
-                <textarea ref='messageBox' onKeyPress = {this.handleKeyPress.bind(this)} onChange={this.handleTextAreaChange.bind(this)}></textarea>
+                <textarea placeholder='Type a message' rows={2} ref='messageBox' onKeyPress = {this.handleKeyPress.bind(this)} onChange={this.handleTextAreaChange.bind(this)}></textarea>
 
             </div>
 		)
