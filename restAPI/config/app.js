@@ -138,6 +138,10 @@ router.route('/login')
 			}, app.get('jwtTokenSecret'));
         	//console.log(err);
         	console.log(token + "this token");
+
+        	res.json({
+        		token: token
+        	})
         	//console.log(info);
 		})(req, res, next)
 });

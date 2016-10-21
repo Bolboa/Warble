@@ -66,7 +66,10 @@ class Home extends Component {
               password: this.state.password_login
  		 	})
  	  	})
- 	  	.then(json => json.json())
+ 	  	.then((response) => response.json())
+      	.then((responseJson) => {
+        	console.log(responseJson);
+      	})
  	  	
   	  	.catch(function(error) {
   	  		console.log("request failed");
