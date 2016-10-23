@@ -115,7 +115,6 @@ router.get('/', function(req, res) {
 
 router.route('/register')
 	.post(function(req, res, next) {
-		//console.log(req.body.username);
 		passport.authenticate('register', function(err, user, info){
 			console.log("authenticate");
         	console.log(err);
@@ -139,24 +138,20 @@ router.route('/login')
   				iss: user.username,
   				exp: expires
 			}, app.get('jwtTokenSecret'));
-        	//console.log(err);
-        	console.log(token + "this token");
+        	
 
         	res.json({
         		token: token,
         		username:user.username
         	})
         	return true;
-        	//console.log(info);
+        	
 		})(req, res, next)
 });
 
 router.route('/decode')
 	.post(function(req, res) {
 		var token = req.body.token;
-		console.log(token + "heyy");
-		
-		console.log(token + "yayay");
 		if (token) {
 		  try {
 		    var decoded = jwt.decode(token, app.get('jwtTokenSecret'));
@@ -166,10 +161,10 @@ router.route('/decode')
         	})
 
 		  } catch (err) {
-		    console.log("nope");
+		    console.log(err);
 		  }
 		} else {
-		  console.log("yay");
+		  console.log("token is does not exist");
 		}
 	});
 	
