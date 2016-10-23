@@ -4,8 +4,8 @@ var LocalStrategy   = require('passport-local').Strategy;
 var moment = require('moment');
 
 module.exports = function(app, router, passport, jwt) {
-	
 	app.set('jwtTokenSecret', 'YOUR_SECRET_STRING');
+	
 
 
 
@@ -111,6 +111,8 @@ router.get('/', function(req, res) {
     next();
 });
 
+
+
 router.route('/register')
 	.post(function(req, res, next) {
 		//console.log(req.body.username);
@@ -142,9 +144,31 @@ router.route('/login')
         	res.json({
         		token: token
         	})
+        	return true;
         	//console.log(info);
 		})(req, res, next)
 });
+
+router.route('/decode')
+	.post(function(req, res) {
+		var token = req.body.token;
+		token = JSON.parse(token);
+		console.log(token + "yayay");
+		if (token) {
+		  try {
+		    var decoded = jwt.decode(token, app.get('jwtTokenSecret'));
+
+		    res.json({
+        		auth: true
+        	})
+
+		  } catch (err) {
+		    console.log("nope");
+		  }
+		} else {
+		  console.log("yay");
+		}
+	});
 	
 	
 }

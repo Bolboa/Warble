@@ -19,8 +19,13 @@
   },
   "homepage": "https://github.com/EseOkonofua/React-Redux-Template#readme",
   "dependencies": {
+    "body-parser": "^1.15.2",
+    "cookie-parser": "^1.4.3",
     "if-env": "^1.0.0",
+    "jsonwebtoken": "^7.1.9",
+    "jwt-simple": "^0.5.0",
     "lodash": "^4.16.4",
+    "moment": "^2.15.1",
     "react": "^15.3.2",
     "react-dom": "^15.3.2",
     "react-redux": "^4.4.5",
