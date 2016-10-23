@@ -24,7 +24,7 @@ class Home extends Component {
 	}
   componentWillReceiveProps() {
     const received = JSON.parse(localStorage.getItem('token'));
-    //received = JSON.parse(received);
+   
     if (received !== null) {
       var token = received.token;
       
@@ -143,16 +143,7 @@ class Home extends Component {
           {this.state.registerForm && <Register switch={this.onClick.bind(this)} submit={this.handleRegister.bind(this)} password={this.handlePasswordChangeRegister.bind(this)} username={this.handleUsernameChangeRegister.bind(this)}/>}
 				  {!this.state.registerForm && <Login switch={this.onClick.bind(this)} submit={this.handleLogin.bind(this)} password={this.handlePasswordChangeLogin.bind(this)} username={this.handleUsernameChangeLogin.bind(this)}/>}
           
-        {
-					(this.props.username) ? <Link to='/chat'>Find a chat!</Link> :  (
-						<div>
-							<input type='text' ref='dumblogin' onChange={ (evt)=>{this.setState({ dumbuser: evt.target.value })} } ></input>
-							<button onClick={this.handleDumbLogin.bind(this)}>Dumb Login</button>
-						</div>
-
-					)
-
-				}
+        
 				<h1>{(this.props.username == null || this.props.username == '') ? 'No user' : this.props.username }</h1>
 			</div>
     	)
