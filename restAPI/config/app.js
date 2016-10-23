@@ -133,6 +133,7 @@ router.route('/login')
 			if (!user) {
 				return res.json(401, { error: 'message' });
 			}
+			console.log("this is user" + user);
 			var expires = moment().add('days', 7).valueOf();
 			var token = jwt.encode({
   				iss: user.username,
@@ -142,7 +143,8 @@ router.route('/login')
         	console.log(token + "this token");
 
         	res.json({
-        		token: token
+        		token: token,
+        		username:user.username
         	})
         	return true;
         	//console.log(info);
@@ -152,7 +154,8 @@ router.route('/login')
 router.route('/decode')
 	.post(function(req, res) {
 		var token = req.body.token;
-		token = JSON.parse(token);
+		console.log(token + "heyy");
+		
 		console.log(token + "yayay");
 		if (token) {
 		  try {
