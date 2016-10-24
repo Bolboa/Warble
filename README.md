@@ -5,4 +5,5 @@
 ##Technologies
 * Redux-React
 * PeerJS (P2P communication using WebRTC)
+* Node.js
 
