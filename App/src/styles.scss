@@ -119,3 +119,122 @@ a:active, a:visited {
     background: linear-gradient(to right,$yellow, $blue); /* Standard syntax */
     background-size:cover;
 }
+
+
+.loginForm, .registerForm {
+    width: 500px;
+    height: 600px;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    position: absolute;
+    top: 130px;
+    left: 0;
+    right: 0;
+}
+
+.loginWrap {
+    width: 500px;
+    float: left;
+    height: 100%;
+    background: rgba(255, 255, 255, 0.75);
+    -webkit-box-shadow: 4px 3px 14px -5px rgba(0,0,0,0.75);
+-moz-box-shadow: 4px 3px 14px -5px rgba(0,0,0,0.75);
+box-shadow: 4px 3px 14px -5px rgba(0,0,0,0.75);
+}
+
+.bodyLogin {
+    overflow: hidden;
+    height: 100%;
+}
+
+.bg_image {
+    height: 1000px;
+    width: 100%;
+}
+
+h1 {
+    font-family: 'Roboto', sans-serif;
+    color: #87909c;
+    font-weight: bolder;
+    text-align: center;
+    font-size: 1.5em;
+    margin-top: 20px;
+}
+
+img.logo_image {
+    width: 500px;
+}
+
+img.title_image {
+    width: 200px;
+    margin-left: auto;
+    display: block;
+    margin-right: auto;
+    margin-top: -90px;
+}
+
+label {
+    font-size: 12px;
+    font-weight: bold;
+    color: #87909c;
+    float: left;
+    clear: both;
+    font-family: 'Roboto', sans-serif;
+    margin-left:30px;
+    margin-top:15px;
+}
+
+input[type="text"], input[type="password"] {
+    float: left;
+    margin-top: 15px;
+    clear: both;
+    margin-left: 30px;
+    font-size: 1.3em;
+    width: 80%;
+    outline: none;
+    border: none;
+    padding: 10px;
+    padding-left: 10px;
+}
+
+.login_btn {
+    float: left;
+    clear: left;
+    font-family: 'Roboto', sans-serif;
+    background: #7289da;
+    border: solid 1px #7289da;
+    width: 84%;
+    margin-left: 30px;
+    margin-top: 50px;
+    padding: 20px;
+    border-radius: 5px;
+    font-size: 1em;
+    color: white;
+}
+
+.registerLinkWrap {
+    float: left;
+    clear: left;
+    margin-left: 30px;
+}
+
+a.register_link {
+    float: left;
+    margin-top: 11px;
+    font-size: 13px;
+    color:black;
+    font-family: 'Roboto', sans-serif;
+}
+
+a.register_link:hover {
+    text-decoration: underline;
+}
+
+p.register_sentence {
+    clear: left;
+    float: left;
+    font-size: 12px;
+    color: #3e4956;
+    font-family: 'Roboto', sans-serif;
+}

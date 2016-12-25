@@ -29,7 +29,8 @@ module.exports = {
       {
           test: /\.scss$/,
           loader: extractCSS.extract(['css','sass'])
-      }
+      },
+      { test: /\.(png|jpg|jpeg|gif|woff)$/, loader: 'url-loader?limit=8192' },
     ]
   },
   plugins: process.env.NODE_ENV === 'production' ? [

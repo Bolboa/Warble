@@ -37,7 +37,23 @@ const allReducers = combineReducers({
           return [];
       }
       return state;
-  }
+  },
+
+  storage:(state=null, action)=> {
+      switch(action.type) {
+        case "STORE_LOCAL":
+          return "saved";
+      }
+      return state;
+    },
+  extract_storage:(state=null, action)=> {
+      switch(action.type) {
+        case "STORE_LOCAL":
+          return action.received;
+      }
+      return null;
+    },
+
 });
 
 export default allReducers

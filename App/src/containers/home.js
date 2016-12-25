@@ -2,7 +2,7 @@ import React, { Component } from 'react'
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
 import { browserHistory , Link } from 'react-router'
-import { login , connectSocket } from '../actions'
+import { login , connectSocket, storeLocally, extractStorage } from '../actions'
 import Login from '../components/loginForm'
 import Register from '../components/registerForm'
 
@@ -24,14 +24,15 @@ class Home extends Component {
 	}
   componentWillReceiveProps() {
     //get user's token and username from local storage
-    const received = JSON.parse(localStorage.getItem('token'));
+    const storage = this.props.extractStorage();
+    console.log(storage.received.token);
     
     //if user info is stored
-    if (received !== null) {
-      var token = received.token;
+    if (storage !== null) {
+      var token = storage.received.token;
       
       //POST request to authenticate user token
-      fetch('http://localhost:8080/api/decode', {
+      fetch('http://localhost:8000/api/decode', {
         method: 'POST',
         headers: {
           'Accept': 'application/json',
@@ -45,7 +46,7 @@ class Home extends Component {
       .then((responseJson) => {
         //if user is authenticated successfully, re-route to chat
         if (responseJson.auth == true) {
-          this.props.login(received.username);
+          this.props.login(storage.received.username);
           browserHistory.push('/chat');
         }
       })
@@ -72,7 +73,7 @@ class Home extends Component {
 
   //POST request to register user credentials
   handleRegister(){
-    fetch('http://localhost:8080/api/register', {
+    fetch('http://localhost:8000/api/register', {
       method: 'POST',
       headers: {
         'Accept': 'application/json',
@@ -94,7 +95,7 @@ class Home extends Component {
   
   //POST request to server to check if user is real
   handleLogin(){
-    fetch('http://localhost:8080/api/login', {
+    fetch('http://localhost:8000/api/login', {
       method: 'POST',
       headers: {
         'Accept': 'application/json',
@@ -107,16 +108,9 @@ class Home extends Component {
     })
     .then((response) => response.json())
     .then((responseJson) => {
-      var userInfo = {
-        token:responseJson.token,
-        username:responseJson.username
-      }
-      const serializedState = JSON.stringify(userInfo);
-      
-      //store token in local storage
-      localStorage.setItem('token', serializedState);
-      //login successful re-route to video chat
+     
       this.props.login(responseJson.username);
+      this.props.storeLocally(responseJson.token, responseJson.username);
       browserHistory.push('/chat');
     })
     .catch(function(error) {
@@ -139,19 +133,17 @@ class Home extends Component {
           {this.state.registerForm && <Register switch={this.onClick.bind(this)} submit={this.handleRegister.bind(this)} password={this.handlePasswordChangeRegister.bind(this)} username={this.handleUsernameChangeRegister.bind(this)}/>}
 				  {!this.state.registerForm && <Login switch={this.onClick.bind(this)} submit={this.handleLogin.bind(this)} password={this.handlePasswordChangeLogin.bind(this)} username={this.handleUsernameChangeLogin.bind(this)}/>}
           
-        
-				<h1>{(this.props.username == null || this.props.username == '') ? 'No user' : this.props.username }</h1>
 			</div>
     	)
   }
 }
 
 function matchDispatchToProps(dispatch){
-	return bindActionCreators({login , connectSocket},dispatch);
+	return bindActionCreators({login , connectSocket, storeLocally, extractStorage},dispatch);
 }
 
 function mapStateToProps(state){
-	return { username:state.username, socket:state.socket }
+	return { username:state.username, socket:state.socket, storage:state.storage, extract_storage:state.extract_storage }
 }
 
 export default connect(mapStateToProps,matchDispatchToProps)(Home)
