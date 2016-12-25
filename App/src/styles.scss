@@ -198,7 +198,7 @@ input[type="text"], input[type="password"] {
     padding-left: 10px;
 }
 
-.login_btn {
+.login_btn, .register_btn {
     float: left;
     clear: left;
     font-family: 'Roboto', sans-serif;
@@ -213,13 +213,13 @@ input[type="text"], input[type="password"] {
     color: white;
 }
 
-.registerLinkWrap {
+.registerLinkWrap, .loginLinkWrap {
     float: left;
     clear: left;
     margin-left: 30px;
 }
 
-a.register_link {
+a.register_link, a.login_link {
     float: left;
     margin-top: 11px;
     font-size: 13px;
@@ -227,11 +227,11 @@ a.register_link {
     font-family: 'Roboto', sans-serif;
 }
 
-a.register_link:hover {
+a.register_link:hover, a.login_link:hover {
     text-decoration: underline;
 }
 
-p.register_sentence {
+p.register_sentence, p.login_sentence {
     clear: left;
     float: left;
     font-size: 12px;

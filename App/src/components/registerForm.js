@@ -4,9 +4,11 @@ export default class Register extends Component{
 	render(){
         return(
         	<div className="bodyLogin">
+        	<img className="bg_image" src={require("../../images/background.jpg")}/>
             <div className="registerForm">
-           
+           	
             <div className="loginWrap">
+            <img className="logo_image" src={require("../../images/logo.png")}/>
             <h1>Register</h1>
 			    <div>
 			        <label>Username:</label>
@@ -17,9 +19,12 @@ export default class Register extends Component{
 			        <input type="password" name="password_reg" onChange={this.props.password}/>
 			    </div>
 			    <div>
-			        <button onClick={this.props.submit}>Register</button>
+			        <button className="register_btn" onClick={this.props.submit}>Register</button>
 			    </div>
-			    <a onClick={this.props.switch} href='#'>click to Login</a>
+			    <div className="loginLinkWrap">
+			    	<p className="login_sentence">Already have an account?</p>
+			    	<a className="login_link" onClick={this.props.switch} href='#'>Login</a>
+			    </div>
 			    </div>
 			</div>
 			</div>
