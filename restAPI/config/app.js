@@ -39,7 +39,7 @@ module.exports = function(app, router, passport, jwt) {
 				//If user already exists in DB
 				if (user) {
 					console.log("User already exists");
-					return done(null, false, req.flash('message', 'User Already Exists'));
+					return done("Username already in use", false, req.flash('message', 'User Already Exists'));
 				}
 				else {
 
@@ -72,18 +72,16 @@ module.exports = function(app, router, passport, jwt) {
     	passReqToCallback: true // allows us to pass back the entire request to the callback
     },
     function(req, username, password, done) {
-    	console.log(password + "here");
     	 // we are checking to see if the user trying to login already exists
     	 User.findOne({'username': username}, function(err, user){
     	 	// if there are any errors, return the error before anything else
-    	 	console.log(password);
             if (err)
                 return done(err);
             if (!user)
-            	return done(null, false, req.flash('loginMessage', 'No user found.'));
+            	return done("Username does not exist", false, req.flash('loginMessage', 'No user found.'));
             // if the user is found but the password is wrong
             if (!user.validPassword(password))
-            	return done(null, false, req.flash('loginMessage', 'Oops! Wrong password.'));
+            	return done("Password does not match username", false, req.flash('loginMessage', 'Oops! Wrong password.'));
 
             return done(null, user);
 
@@ -116,10 +114,14 @@ router.get('/', function(req, res) {
 router.route('/register')
 	.post(function(req, res, next) {
 		passport.authenticate('register', function(err, user, info){
-			console.log("authenticate");
-        	console.log(err);
-        	console.log(user);
-        	console.log(info);
+
+			if (err) {
+				return res.json({error:err});
+			}
+			else {
+				res.json({success:true});
+			}
+
 		})(req, res, next)
 });
 
@@ -127,10 +129,13 @@ router.route('/login')
 	.post(function(req, res, next) {
 		console.log(req.body);
 		passport.authenticate('local-login', function(err, user, info){
-			console.log("authenticate");
-			if (err) {return next(err)}
+			
+			if (err) {
+				return res.json({ error: err });
+			}
+		
 			if (!user) {
-				return res.json(401, { error: 'message' });
+				return res.json({ error: err });
 			}
 			console.log("this is user" + user);
 			var expires = moment().add('days', 7).valueOf();

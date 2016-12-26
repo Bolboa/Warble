@@ -42,7 +42,7 @@ const allReducers = combineReducers({
   storage:(state=null, action)=> {
       switch(action.type) {
         case "STORE_LOCAL":
-          return "saved";
+          return state;
       }
       return state;
     },

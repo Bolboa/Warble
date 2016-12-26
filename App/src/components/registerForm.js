@@ -12,7 +12,8 @@ export default class Register extends Component{
             <h1>Register</h1>
 			    <div>
 			        <label>Username:</label>
-			        <input type="text" name="username_reg"  onChange={this.props.username}/>
+			        <input type="text" name="username_reg" onChange={this.props.username}/>
+			        <div className="errRegister">{this.props.errUser}</div>
 			    </div>
 			    <div>
 			        <label>Password:</label>

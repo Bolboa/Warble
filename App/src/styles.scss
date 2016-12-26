@@ -211,6 +211,7 @@ input[type="text"], input[type="password"] {
     border-radius: 5px;
     font-size: 1em;
     color: white;
+    cursor:pointer;
 }
 
 .registerLinkWrap, .loginLinkWrap {
@@ -237,4 +238,28 @@ p.register_sentence, p.login_sentence {
     font-size: 12px;
     color: #3e4956;
     font-family: 'Roboto', sans-serif;
+}
+
+.errUsername, .errPassword, .errRegister {
+    float: left;
+    margin-left: 30px;
+    margin-top: 3px;
+    color: red;
+    font-size: 0.8em;
+    font-family: 'Roboto', sans-serif;
+}
+
+.reg_success {
+    position: absolute;
+    background: #f2fae3;
+    width: 100%;
+    text-align: center;
+    padding: 10px;
+    font-family: 'Roboto', sans-serif;
+    color: #94b639;
+    border-bottom: solid 3px #94b639;
+}
+
+.reg_neutral {
+    display: none;
 }

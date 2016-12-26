@@ -13,10 +13,13 @@ export default class Login extends Component{
 			    <div>
 			        <label>USERNAME</label>
 			        <input type="text" name="username"  onChange={this.props.username}/>
+			        <div className="errUsername">{this.props.errUser}</div>
 			    </div>
+
 			    <div>
 			        <label>PASSWORD</label>
 			        <input type="password" name="password" onChange={this.props.password}/>
+			        <div className="errPassword">{this.props.errPass}</div>
 			    </div>
 			    <div>
 			        <button className="login_btn" onClick={this.props.submit}>Login</button>
