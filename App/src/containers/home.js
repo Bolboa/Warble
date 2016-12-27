@@ -27,7 +27,7 @@ class Home extends Component {
         //checks redux to see if a socket is stored
         if(!this.props.socket){
             console.log("No Socket connection...attempting to connect socket");
-            //connect to a socket
+            //creates a new socket and stores it in redux
 			this.props.connectSocket(io());
 		}
     }

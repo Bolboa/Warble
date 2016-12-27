@@ -143,30 +143,32 @@ class Chat extends Component {
 			});
 		});
 
-		
+		//peer is created and assigned a peer ID
 		this.peer.on('open', id => {
 			console.log("Peer connection open");
 			console.log(this.props.socket.id);
+			//socket ID and peer ID is passed to the server side
 			this.props.socket.emit('pID', {pID:id , sID: this.props.socket.id, available:true} );
   			console.log('My PeerID is:', id);
 
-
-
-			//SOCKET EVENT HANDLERS
+			//the peer ID of the remote peer is received from the server side
 			this.props.socket.on('pID' , pID=>{
-				console.log("Im connecting to other user")
+				console.log("Im connecting to other user");
+				//a connection is made between the local peer and the remote peer
 				var conn = this.peer.connect(pID);
 
-
-				//CONNECTION EVENT HANDLERS
-				conn.on('data',data =>{
-					console.log("Got some data of type:",data.type)
+				//peer connection info is received
+				conn.on('data', data =>{
+					console.log("Got some data of type:", data.type);
+					//if peer connection info exists
 					switch(data.type){
 						case 'peerMessage':
+							//store the connection info in redux
 							this.props.getPeerMessage(data);
 					}
 				});
 
+				
 				conn.on('close',()=>{
 					console.log("Data connection is closed");
 					this.props.removeP2pConnection();

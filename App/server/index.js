@@ -32,48 +32,55 @@ app.get('*', function(req, res){
     res.sendFile(path.resolve('public/index.html'));
 });
 
-
-/*
-User Object will have:
-	pID...peer id
-	sID..socket id
-	availabe.. if they are available
-	userCache...cache containing spoken to users, location info etc
-*/
-var SearchPool = function(){
+//initialize the search pool,
+//this is where all the peers will be stored until an established connection is made
+var SearchPool = function() {
 	this.searching = {};
 	this.timeouts = {};
 }
 
+//the peer will alternate between active search mode and passive search mode,
+//alternating will ensure that the peer does not sit too long in the search pool
 SearchPool.prototype = {
 	constructor: SearchPool,
+	//checks to see if the pool is empty
 	isEmpty: function(){
 		if( _.isEmpty(this.searching) ) return true;
 		else return false;
 	},
+	//active search means that a peer is looking through the search pool for an available connection 
 	activeSearch:function(user){
-		console.log("Trying active search for pID:",user.pID);
+		console.log("Trying active search for pID:", user.pID);
+		//if search pool is not empty
 		if(!this.isEmpty()){
+			//iterate through the search pool
 			_.forEachRight(this.searching , (value,key) =>{
-				//No cache implementation yet
+				//if another peer is free
 				if(value.available){
+					//set value to false to show that peer is no longer available
 					value.available = false;
-					io.to(user.sID).emit("pID",value.pID);
-					io.to(value.sID).emit("pID",user.pID);
-
+					//emit the local peer as well as the remote peer's ID to the front end to establish a connection
+					io.to(user.sID).emit("pID", value.pID);
+					io.to(value.sID).emit("pID", user.pID);
+					//remove remote peer from the search pool
 					delete this.searching[key];
+					//the remote peer was waiting in the search pool for a connection to be established,
+					//timeout is cleared to prevent the peer from re-entering active search mode
 					clearTimeout(this.timeouts[key]);
 					return ;
 				}
-
 			});
 		}
+		//if the search pool is empty,
+		//add the peer into the pool
 		else{
 			this.passiveSearch(user);
 		}
 	},
+	//passive search means the peer is sitting in the search pool waiting for an connection to be made
 	passiveSearch:function(user){
 		console.log("Trying passive search for pID:",user.pID);
+		//the peer is placed inside the search pool
 		this.searching[user.pID] = user;
 		this.timeouts[user.pID] = setTimeout( ()=>{
 			delete this.searching[user.pID];
@@ -87,13 +94,15 @@ SearchPool.prototype = {
 
 }
 
+//object used to store all peers waiting to establish a connection
 var globalPool = new SearchPool();
-console.log(globalPool);
 
+//create a new socket connection
 io.on('connection', function(socket) {
 	console.log("Socket connected, id:", socket.id);
 	console.log("All sockets:", Object.keys(io.sockets.connected) );
 
+	//receives the peer ID from the front-end
 	socket.on('pID', function(data){
 		console.log("Received pID", data.pID);
 		globalPool.activeSearch(data);
