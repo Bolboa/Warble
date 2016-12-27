@@ -118,25 +118,32 @@ class Chat extends Component {
 			]}
 		});
 
-		//PEER2PEER EVENT HANDLERS
+		//connects peer to a remote peer
 		this.peer.on('connection', conn => {
 			console.log('Connected to other user in p2p connection');
+			//saves connection info to redux
 			this.props.addP2pConnection(conn);
+			//clear peer connection message when the peer is making a new connection
 			this.props.clearPeerMessage();
+			//peer is attempting to send local video stream to a remote peer
 			var call = this.peer.call(conn.peer,this.localStream);
 		});
 
+		//peer is answering the call of the remote peer
 		this.peer.on('call', call =>{
+			//answers call and provides local video stream
 			call.answer(this.localStream);
+			//remote video stream is received
 			call.on('stream', remoteStream => {
 				console.log("Got Stream from peer! ");
+				//remote video stream is saved in the constructor
 				this.remoteStream=remoteStream;
-
-				// Show stream in video/canvas element.
+				//show remote stream in canvas element.
 				this.refs.remoteStream.src = window.URL.createObjectURL(self.remoteStream);
 			});
 		});
 
+		
 		this.peer.on('open', id => {
 			console.log("Peer connection open");
 			console.log(this.props.socket.id);
