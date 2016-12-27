@@ -136,6 +136,7 @@ module.exports = function(app, router, passport, jwt) {
 				if (!user) {
 					return res.json({ error: err });
 				}
+				
 				//expiry date of JWT, which is set to one week
 				var expires = moment().add('days', 7).valueOf();
 				//create a token encrypted using the JWT secret
@@ -143,12 +144,14 @@ module.exports = function(app, router, passport, jwt) {
   					iss: user.username,
   					exp: expires
 				}, app.get('jwtTokenSecret'));
+        		
         		//return the JWT along with the user's username to the front-end,
         		//it will be stored to user's local storage
         		res.json({
         			token: token,
         			username:user.username
         		})
+
         		//login successful
         		return true;
 			})(req, res, next)

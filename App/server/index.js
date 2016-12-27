@@ -5,24 +5,29 @@ const http = require('http');
 const socketIO = require('socket.io');
 var _ = require('lodash');
 
+//initialize node.js express
 var app = express();
+
+//create server using express
 var server = http.createServer(app);
 
-
+//initialize socket IO
 const io = socketIO(server);
 
+//set the path to public folder
+app.use(express.static(path.resolve('public')));
 
+//initialize webpack
 const webpackHotMiddleware = require('webpack-hot-middleware');
 const webpackDevMiddleware = require('webpack-dev-middleware');
 const webpackConfig = require('../webpack.config.js');
 const compiler = webpack(webpackConfig);
-
-app.use(express.static(path.resolve('public')));
 app.use(webpackDevMiddleware(compiler, {
 	noInfo: true, publicPath: webpackConfig.output.publicPath
 }));
 app.use(webpackHotMiddleware(compiler));
 
+//load up the initial HTML file for the react application
 app.get('*', function(req, res){
     res.sendFile(path.resolve('public/index.html'));
 });

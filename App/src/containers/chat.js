@@ -17,8 +17,6 @@ class Chat extends Component {
 		this.remoteStream = '';
 		this.local2dContext ='';
 		this.remote2dContext = '';
-
-		//Make these variables into component state later
 		this.searching = true;
 	}
 
@@ -48,41 +46,53 @@ class Chat extends Component {
 		this.cleanUp();
 	}
 
-
 	componentDidMount() {
-
 		var self = this;
+		//canvas for local stream
 		this.local2dContext = this.refs.localCanvas.getContext('2d');
+		//canvas for remote stream
 		this.remote2dContext = this.refs.remoteCanvas.getContext('2d');
 
+		//draws live video stream to canvas
 		var streamVideoToCanvas = (vid,ctx)=>{
 			ctx.drawImage(vid,0,0,vid.width,vid.height);
 		}
 
+		//get webcam permissions
 		navigator.getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia;
-
+		//connect to the webcam and create a video stream
 		navigator.getUserMedia({video: true, audio: true}, stream => {
+			//save stream in constructor
 			this.localStream = stream;
+			//place the stream in the video src
 			this.refs.localStream.src = window.URL.createObjectURL(this.localStream);
 		},function(err){
+			//throw error if video stream not found
 			console.log("Error",err)
 		});
 
-
-
-		//VIDEO -> CANVAS
+		//if the local video is played, draw it to a canvas in a steady stream,
+		//this happens behind the scenes
 		this.refs.localStream.addEventListener('play',function(){
+			//if local video not paused or ended
 			if(!this.paused && !this.ended){
+				//draw video frame to canvas at a set interval
 				self.localCanvasLoop = setInterval(streamVideoToCanvas,10,this,self.local2dContext);
 			}
 		});
 
+		//if the remote video is played, draw it to a canvas in a steady stream,
+		//this happens behind the scenes
 		this.refs.remoteStream.addEventListener('play',function(){
+			//if local video not paused or ended
 			if(!this.paused && !this.ended){
+				//draw video frame to canvas at a set interval
 				self.remoteCanvasLoop = setInterval(streamVideoToCanvas,10,this,self.remote2dContext);
 			}
 		});
 
+		//initalize a new peer, 
+		//configure all ICE servers for permission to connect two peers
 		this.peer = new Peer({
 			key:'p73vkga2525fusor',
 			config:{'iceServers': [
@@ -107,8 +117,6 @@ class Chat extends Component {
 				{url:'stun:stun.xten.com'},
 			]}
 		});
-
-
 
 		//PEER2PEER EVENT HANDLERS
 		this.peer.on('connection', conn => {
