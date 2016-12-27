@@ -38,9 +38,9 @@ class Home extends Component {
     
         //if user info is already stored in local storage
         if (storage !== null) {
-            //token is the user's encoded password
+            //token is the encrypted JWT 
             var token = storage.received.token;
-            //decode the user token to check if it is valid, this is done using JWT
+            //decode the user's JWT to check if it is valid
             fetch('http://localhost:8000/api/decode', {
                 method: 'POST',
                 headers: {
