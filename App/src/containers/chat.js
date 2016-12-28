@@ -196,21 +196,23 @@ class Chat extends Component {
 
 	render(){
     	return(
-	    	<div className='chat-wrapper'>
-				<div className='video-section'>
-					<div className='videos'>
-						<canvas ref='remoteCanvas' className='remoteCanvas' width="320" height="240"></canvas>
-					  	<canvas ref='localCanvas' className='localCanvas' width="320" height="240"></canvas>
+    		<div id="chatcon">
+	    		<div className='chat-navbar'>
+					<Link onClick={this.logout.bind(this)} to ="/" >Logout</Link>
+				</div>
+		    	<div className='chat-wrapper'>
+					<div className='video-section'>
+						<div className='videos'>
+							<canvas ref='remoteCanvas' className='remoteCanvas' width="320" height="240"></canvas>
+						  	<canvas ref='localCanvas' className='localCanvas' width="320" height="240"></canvas>
+					  	</div>
 				  	</div>
-			  	</div>
-				<ChatBox />
-			 	<div className='chat-navbar'>
-				 	<Link onClick={this.logout.bind(this)} to ="/" >Logout</Link>
-			 	</div>
+					<ChatBox />
 
-	 			<video style={{display:'none'}}  ref="localStream" width="320" height="240" autoPlay muted></video>
-	 			<video  style={{display:'none'}} ref="remoteStream" width="320" height="240" autoPlay></video>
+		 			<video style={{display:'none'}}  ref="localStream" width="320" height="240" autoPlay muted></video>
+		 			<video  style={{display:'none'}} ref="remoteStream" width="320" height="240" autoPlay></video>
 
+		     	</div>
 	     	</div>
     	)
   	}

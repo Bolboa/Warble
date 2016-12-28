@@ -41,7 +41,7 @@ class Home extends Component {
             //token is the encrypted JWT 
             var token = storage.received.token;
             //decode the user's JWT to check if it is valid
-            fetch('http://localhost:8000/api/decode', {
+            fetch('http://6bb106a8.ngrok.io/api/decode', {
                 method: 'POST',
                 headers: {
                     'Accept': 'application/json',
@@ -92,7 +92,7 @@ class Home extends Component {
     /*-------------HANDLE USER REGISTRATION------------*/
     handleRegister(){
         //pass user credentials for registration
-        fetch('http://localhost:8000/api/register', {
+        fetch('http://6bb106a8.ngrok.io/api/register', {
             method: 'POST',
             headers: {
                 'Accept': 'application/json',
@@ -129,7 +129,7 @@ class Home extends Component {
     /*--------HANDLE USER LOGIN---------*/
     handleLogin(){
         //pass user credentials for login
-        fetch('http://localhost:8000/api/login', {
+        fetch('http://6bb106a8.ngrok.io/api/login', {
             method: 'POST',
             headers: {
                 'Accept': 'application/json',
