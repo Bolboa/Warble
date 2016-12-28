@@ -3,7 +3,7 @@ import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
 import { browserHistory, Link } from 'react-router'
 
-import { addP2pConnection, getPeerMessage , clearPeerMessage, removeP2pConnection} from '../actions'
+import { addP2pConnection, getPeerMessage , clearPeerMessage, removeP2pConnection, logout} from '../actions'
 
 import ChatBox from './chatbox'
 
@@ -20,18 +20,21 @@ class Chat extends Component {
 		this.searching = true;
 	}
 
+	/*------END PEER CONNECTIONS------*/
 	cleanUp(){
+		//if there exists a socket connection
 		if(this.props.socket){
+			//send peer ID to the server side to be removed from the search pool
 			this.props.socket.emit('leaveSearch',{ pID:this.peer.id });
+			//the peer is no longer searching for a connection
 			this.searching = false;
 			//close peer connection to server
 			this.peer.destroy();
-
 			//remove all socket listeners
 			this.props.socket.removeAllListeners('pID');
-
 			//close audio and video streams
-			this.localStream.getTracks().forEach( (stream,index) =>{
+			this.localStream.getTracks().forEach( (stream,index) => {
+				//end media stream
 				stream.stop();
 			});
 
@@ -43,6 +46,7 @@ class Chat extends Component {
 
 	componentWillUnmount(){
 		console.log("Component is Unmounting");
+		//end all connections when chat component is unmounted and destroyed
 		this.cleanUp();
 	}
 
@@ -168,49 +172,56 @@ class Chat extends Component {
 					}
 				});
 
-				
-				conn.on('close',()=>{
+				//if connection between peers is close
+				conn.on('close', ()=> {
 					console.log("Data connection is closed");
+					//remove connection info from redux
 					this.props.removeP2pConnection();
+					//send peer ID and socked ID to server side to establish another connection
 					if(this.searching)
 						this.props.socket.emit('pID', {pID:id , sID: this.props.socket.id, available:true} );
 				});
 			});
 		});
-
-
-
 	}
 
+	/*-----LOGOUT-----*/
+	logout() {
+		//replace the username stored in redux with a null value,
+		//this will prevent the user from accessing the video chat page without being authenticated
+		this.props.logout(null);
+		//clear the user's JWT from local storage
+		localStorage.clear();
+	}
 
 	render(){
     	return(
-	      <div className='chat-wrapper'>
-			  <div className='video-section'>
-				  <div className='videos'>
-					  <canvas ref ='remoteCanvas' className = 'localCanvas' width="320" height="240"></canvas>
-					  <canvas ref ='localCanvas' className = 'localCanvas' width="320" height="240"></canvas>
-				  </div>
-			  </div>
-			<ChatBox />
-			 <div className='chat-navbar'>
-				 <Link to ="/" >Home</Link>
-			 </div>
+	    	<div className='chat-wrapper'>
+				<div className='video-section'>
+					<div className='videos'>
+						<canvas ref ='remoteCanvas' className = 'localCanvas' width="320" height="240"></canvas>
+					  	<canvas ref ='localCanvas' className = 'localCanvas' width="320" height="240"></canvas>
+				  	</div>
+			  	</div>
+				<ChatBox />
+			 	<div className='chat-navbar'>
+				 	<Link onClick={this.logout.bind(this)} to ="/" >Logout</Link>
+			 	</div>
 
-	 		<video style={{display:'none'}}  ref="localStream" width="320" height="240" autoPlay muted></video>
-	 		<video  style={{display:'none'}} ref="remoteStream" width="320" height="240" autoPlay></video>
+	 			<video style={{display:'none'}}  ref="localStream" width="320" height="240" autoPlay muted></video>
+	 			<video  style={{display:'none'}} ref="remoteStream" width="320" height="240" autoPlay></video>
 
-	      </div>
+	     	</div>
     	)
   	}
-
 }
 
-
+/*------BIND REDUX ACTIONS TO COMPONENT--------*/
 function matchDispatchToProps(dispatch){
-	return bindActionCreators({addP2pConnection, getPeerMessage, clearPeerMessage, removeP2pConnection},dispatch);
+	return bindActionCreators({addP2pConnection, getPeerMessage, clearPeerMessage, removeP2pConnection, logout},dispatch);
 }
 
+/*--------BIND REDUX STATES TO COMPONENT------*/
 function mapStateToProps(state){
 	return { username:state.username, socket:state.socket}
 }

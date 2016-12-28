@@ -87,8 +87,11 @@ SearchPool.prototype = {
 			this.activeSearch(user);
 		} , 5000)
 	},
+	//removes peer from the search pool
 	removeUser(userPID){
+		//timeout is cleared to prevent the peer from re-entering the search pool
 		clearTimeout(this.timeouts[userPID]);
+		//remove peer
 		delete this.searching[userPID];
 	}
 
@@ -105,32 +108,37 @@ io.on('connection', function(socket) {
 	//receives the peer ID from the front-end
 	socket.on('pID', function(data){
 		console.log("Received pID", data.pID);
+		//enters active search mode
 		globalPool.activeSearch(data);
 		console.log('Global Pool:\n',globalPool.searching);
 		socket.pID = data.pID;
 	});
 
+	//when the socket is disconnected
 	socket.on('disconnect',function(){
 		console.log('Socket ID:',socket.id,'DISCONNECTED');
 		console.log("All sockets:", Object.keys(io.sockets.connected) );
+		//if there exists a socket connection
 		if(socket.pID){
+			//removes peer from the search pool
 			globalPool.removeUser(socket.pID);
 		}
 	});
 
+	//removes peer from the search pool
 	socket.on('leaveSearch',function(){
+		//if there exists a socket connection
 		if(socket.pID){
+			//removes peer from the search pool
 			globalPool.removeUser(socket.pID);
 		}
-	})
-
-
-
+	});
 });
 
-
+//set port to 3000
 var PORT = process.env.PORT || 3000;
 
+//lauch server
 server.listen(PORT, function(){
 	console.log("listening on port " + PORT);
 });

@@ -23,7 +23,7 @@ class Home extends Component {
         };
     }
 
-	componentDidMount(){
+	componentWillMount(){
         //checks redux to see if a socket is stored
         if(!this.props.socket){
             console.log("No Socket connection...attempting to connect socket");
@@ -32,7 +32,7 @@ class Home extends Component {
 		}
     }
 
-    componentWillReceiveProps() {
+    componentDidMount() {
         //get user's token and username from local storage, this action is done through redux
         const storage = this.props.extractStorage();
     
@@ -202,6 +202,6 @@ function mapStateToProps(state){
 	return { username:state.username, socket:state.socket, storage:state.storage, extract_storage:state.extract_storage }
 }
 
-export default connect(mapStateToProps,matchDispatchToProps)(Home)
+export default connect(mapStateToProps, matchDispatchToProps)(Home)
 
 

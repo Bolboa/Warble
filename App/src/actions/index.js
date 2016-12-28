@@ -1,60 +1,73 @@
-const login = (username)=>{
+const login = (username) => {
 	return {
 		type: "LOGIN",
 		username
 	}
 }
 
-const connectSocket = (socket) =>{
+const logout = (username) => {
+	return {
+		type:"LOGOUT",
+		username
+	}
+}
+
+const connectSocket = (socket) => {
 	return {
 		type:"CONNECT_SOCKET",
 		socket
 	}
 }
 
-const addP2pConnection = (conn)=>{
+const addP2pConnection = (conn) => {
 	return {
 		type: "ADD_P2PCONNECTION" ,
 		conn
 	}
 }
 
-const removeP2pConnection = () =>{
+const removeP2pConnection = () => {
 	return {
 		type: "REMOVE_CONNECTION"
 	}
 }
 
-const getPeerMessage = (message)=>{
+const getPeerMessage = (message) => {
 	return{
 		type:'PEER_MESSAGE',
 		message
 	}
 }
 
-const clearPeerMessage = ()=>{
+const clearPeerMessage = () => {
 	return {
 		type: 'CLEAR_PEER_MESSAGE'
 	}
 }
 
-const storeLocally = (password, username)=>{
+const storeLocally = (password, username) => {
+	//create user object
 	var userInfo = {
         token:password,
         username:username
-      }
-      const serializedState = JSON.stringify(userInfo);
+    }
+
+    //serialize the object for storage
+    const serializedState = JSON.stringify(userInfo);
       
-      //store token in local storage
-      localStorage.setItem('token', serializedState);
+    //store JWT in user's local storage
+    localStorage.setItem('token', serializedState);
 
 	return {
-		type: 'STORE_LOCAL'
+		type: 'STORE_LOCAL',
+		username
 	}
 }
 
-const extractStorage = ()=>{
+const extractStorage = () => {
+	//retrieve JWT from user's local storage
 	const received = JSON.parse(localStorage.getItem('token'));
+	
 	return {
 		type: 'GET_LOCAL',
 		received
@@ -69,5 +82,6 @@ export {
   getPeerMessage,
   clearPeerMessage,
   storeLocally,
-  extractStorage
+  extractStorage,
+  logout
 }

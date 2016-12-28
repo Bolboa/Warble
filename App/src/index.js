@@ -15,9 +15,12 @@ require('./styles.scss');
 
 const store = createStore(allReducers);
 
+/*-----AUTHENTICATE USER ROUTES-------*/
 function authenticateUser(nextState, replace){
-    //Authenticate routes
+    //get redux store
     var state = store.getState();
+    //if there is not socket connection or username is null,
+    //prevent the user from accessing video chat page
     if(!state.socket || !state.username)
         replace("/");
 }
@@ -26,7 +29,7 @@ render(
   <Provider store={store}>
     <Router history = {browserHistory}>
       <Route path='/' component= { Home }></Route>
-      <Route path='/chat' onEnter={authenticateUser } component={ Chat } />
+      <Route path='/chat' onEnter={ authenticateUser } component={ Chat } />
     </Router>
   </Provider>
 , document.getElementById('app'));

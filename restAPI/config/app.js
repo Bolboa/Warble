@@ -80,9 +80,9 @@ module.exports = function(app, router, passport, jwt) {
     },
     //pass username and password fields to the main function
     function(req, username, password, done) {
-    	 //check to see if the user trying to login already exists in the database
-    	 User.findOne({'username': username}, function(err, user) {
-    	 	//if there are any errors, return the error before anything else
+    	//check to see if the user trying to login already exists in the database
+    	User.findOne({'username': username}, function(err, user) {
+    		//if there are any errors, return the error before anything else
             if (err)
                 return done(err);
             //if the username is not found, return an error message
