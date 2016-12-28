@@ -199,8 +199,8 @@ class Chat extends Component {
 	    	<div className='chat-wrapper'>
 				<div className='video-section'>
 					<div className='videos'>
-						<canvas ref ='remoteCanvas' className = 'localCanvas' width="320" height="240"></canvas>
-					  	<canvas ref ='localCanvas' className = 'localCanvas' width="320" height="240"></canvas>
+						<canvas ref='remoteCanvas' className='remoteCanvas' width="320" height="240"></canvas>
+					  	<canvas ref='localCanvas' className='localCanvas' width="320" height="240"></canvas>
 				  	</div>
 			  	</div>
 				<ChatBox />

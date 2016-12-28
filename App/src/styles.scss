@@ -25,14 +25,14 @@ a:active, a:visited {
 }
 
 .chat-section{
-    flex:1;
-    border:none;
+    border: none;
     border-left: 1px solid #ccc;
     box-sizing: border-box;
-    padding-left:0.5em;
-    display:flex;
+    padding-left: 0.5em;
+    display: flex;
+    width: 100%;
     flex-direction: column;
-    max-width: 400px;
+    margin-left: 5px;
 }
 
 .chat-section{
@@ -71,7 +71,6 @@ a:active, a:visited {
 
 .video-section{
     display: flex;
-    flex:1;
     text-align: center;
 
 }
@@ -80,16 +79,10 @@ a:active, a:visited {
     flex:1;
     display:flex;
     max-width: 800px;
-    margin:0 auto;
     flex-direction: column;
     align-content: stretch;
 }
 
-.videos {
-    canvas{
-        flex:1;
-    }
-}
 
 .chat-navbar{
     border-left:1px solid #ccc;
@@ -97,9 +90,24 @@ a:active, a:visited {
     padding-top:1em;
 }
 
-.localCanvas{
+.localCanvas, .remoteCanvas {
     background-color:black;
+    margin-left: 5px;
     margin-right:5px;
+    width: 500px;
+    height: 460px;
+    -webkit-box-shadow: 9px 5px 17px -6px rgba(0,0,0,0.75);
+    -moz-box-shadow: 9px 5px 17px -6px rgba(0,0,0,0.75);
+    box-shadow: 9px 5px 17px -6px rgba(0,0,0,0.75);
+}
+
+.localCanvas {
+    margin-top: 5px;
+    margin-bottom: 5px;
+}
+
+canvas.remoteCanvas {
+    margin-top: 5px;
 }
 
 .auth-container{
