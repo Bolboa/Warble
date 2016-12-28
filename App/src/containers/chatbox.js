@@ -6,27 +6,34 @@ import { getPeerMessage } from '../actions'
 import ChatMessage from '../components/chatmessage.component'
 
 class ChatBox extends Component {
-
-    constructor(){
+    constructor() {
         super();
-        this.state = {message:''}
+        this.state = {
+            message:''
+        }
     }
 
-    componentDidMount(){
+    componentDidMount() {
         var self = this;
     }
 
-    handleTextAreaChange(evt){
-        this.setState({message:evt.target.value})
+    /*-----SAVES TEXT AS IT IS TYPED-----*/
+    handleTextAreaChange(evt) {
+        this.setState({message: evt.target.value});
     }
 
-    handleKeyPress(evt){
-        //console.log(`Which: ${evt.which}`,`KeyCode: ${evt.keyCode}`,`CharCode: ${evt.charCode}`,`Key: ${evt.key}`);
-        if(evt.which === 13){
+    /*-------SEND MESSAGE------*/
+    handleKeyPress(evt) {
+        //enter key is pressed
+        if(evt.which === 13) {
+            //prevent default action
             evt.preventDefault();
-            if(this.props.p2p.conn && this.props.p2p.conn.open){
+            //if a peer connection has already been established
+            if(this.props.p2p.conn && this.props.p2p.conn.open) {
+                //stores message to be sent and which user is sending the message
                 var message = { type:'peerMessage', sender: this.props.username, message:this.state.message};
-                console.log('Attempting to send message...')
+                console.log('Attempting to send message...');
+                //stores the messages in redux to be used in the child component
                 this.props.p2p.conn.send(message);
                 this.props.getPeerMessage(message);
                 evt.target.value = '';
@@ -41,18 +48,20 @@ class ChatBox extends Component {
                     {
                         (this.props.messages && (this.props.messages.length > 0)) ?
                         this.props.messages.map((message,index)=>{
-                            return <ChatMessage key = {index} {...message}/>
+                            return <ChatMessage username={this.props.username} key = {index} {...message}/>
                         }) : 'No messages'
                     }
                 </ul>
-                <textarea placeholder='Type a message' rows={2} ref='messageBox' onKeyPress = {this.handleKeyPress.bind(this)} onChange={this.handleTextAreaChange.bind(this)}></textarea>
+                
+                <textarea placeholder='Type a message' rows={2} ref='messageBox' onKeyPress={this.handleKeyPress.bind(this)} onChange={this.handleTextAreaChange.bind(this)}></textarea>
 
             </div>
 		)
 	}
 }
 
-function mapStateToProps(state){
+/*--------BIND REDUX STATES TO COMPONENT------*/
+function mapStateToProps(state) {
     return {
         messages:state.chatMessages,
         username: state.username,
@@ -60,10 +69,11 @@ function mapStateToProps(state){
     }
 }
 
-function matchDispatchToProps(dispatch){
+/*------BIND REDUX ACTIONS TO COMPONENT--------*/
+function matchDispatchToProps(dispatch) {
     return bindActionCreators({
         getPeerMessage
-    },dispatch);
+    }, dispatch);
 }
 
 export default connect(mapStateToProps,matchDispatchToProps)(ChatBox);

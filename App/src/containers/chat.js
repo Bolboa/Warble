@@ -10,6 +10,9 @@ import ChatBox from './chatbox'
 class Chat extends Component {
 	constructor(props){
 		super(props);
+		this.state = {
+			connState: true
+		}
 		this.peer = '';
 		this.localCanvasLoop = '';
 		this.remoteCanvasLoop = '';
@@ -18,6 +21,7 @@ class Chat extends Component {
 		this.local2dContext ='';
 		this.remote2dContext = '';
 		this.searching = true;
+		this.conn = '';
 	}
 
 	/*------END PEER CONNECTIONS------*/
@@ -87,7 +91,7 @@ class Chat extends Component {
 
 		//if the remote video is played, draw it to a canvas in a steady stream,
 		//this happens behind the scenes
-		this.refs.remoteStream.addEventListener('play',function(){
+		this.refs.remoteStream.addEventListener('play', function(){
 			//if local video not paused or ended
 			if(!this.paused && !this.ended){
 				//draw video frame to canvas at a set interval
@@ -158,11 +162,15 @@ class Chat extends Component {
 			//the peer ID of the remote peer is received from the server side
 			this.props.socket.on('pID' , pID=>{
 				console.log("Im connecting to other user");
+				//show connect button and hide disconnect button
+				this.setState({connState:true});
 				//a connection is made between the local peer and the remote peer
 				var conn = this.peer.connect(pID);
-
+				this.conn = conn;
 				//peer connection info is received
 				conn.on('data', data =>{
+					//show connect button and hide disconnect button
+					this.setState({connState: true});
 					console.log("Got some data of type:", data.type);
 					//if peer connection info exists
 					switch(data.type){
@@ -172,9 +180,11 @@ class Chat extends Component {
 					}
 				});
 
-				//if connection between peers is close
+				//if connection between peers is closed
 				conn.on('close', ()=> {
 					console.log("Data connection is closed");
+					//show disconnect button and hide connect button
+					this.setState({connState:false});
 					//remove connection info from redux
 					this.props.removeP2pConnection();
 					//send peer ID and socked ID to server side to establish another connection
@@ -194,19 +204,43 @@ class Chat extends Component {
 		localStorage.clear();
 	}
 
+	/*----DISCONNECT FROM PEER-----*/
+	disconnect(){
+		//show disconnect button and hide connect button
+		this.setState({connState:false});
+		//remove peer connection info from redux
+		this.props.removeP2pConnection();
+		//close the connection to the peer
+		this.conn.close();
+	}
+
+	/*---RE-ESTABLISH CONNECTION TO A PEER------*/
+	reconnect() {
+		//refreshes page to call componentDidMount() again,
+		//this will force the peer to search for another connection
+		window.location.reload(true);
+		//show connect button and hide disconnect button
+		this.setState({connState:true});
+	}
+
 	render(){
     	return(
     		<div id="chatcon">
-	    		<div className='chat-navbar'>
-					<Link onClick={this.logout.bind(this)} to ="/" >Logout</Link>
-				</div>
 		    	<div className='chat-wrapper'>
 					<div className='video-section'>
+						
+						<div className="wrapButtons">
+							<Link className="logoutBtn" onClick={this.logout.bind(this)} to ="/" >Logout</Link>
+							{!this.state.connState && <button className="connect" onClick={this.reconnect.bind(this)}>Connect</button>}
+							{this.state.connState && <button className="disconnect" onClick={this.disconnect.bind(this)}>Disconnect</button>}
+						</div>
 						<div className='videos'>
 							<canvas ref='remoteCanvas' className='remoteCanvas' width="320" height="240"></canvas>
 						  	<canvas ref='localCanvas' className='localCanvas' width="320" height="240"></canvas>
 					  	</div>
+
 				  	</div>
+					
 					<ChatBox />
 
 		 			<video style={{display:'none'}}  ref="localStream" width="320" height="240" autoPlay muted></video>
