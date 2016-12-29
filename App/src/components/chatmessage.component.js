@@ -23,7 +23,7 @@ export default class ChatMessage extends Component{
         return(
             <li className={this.state.textColor}>
                 <div className="user-text">{`${this.props.sender}`}</div> 
-				<div className="body-text">-{`${this.props.message}`}</div>
+				<div className="body-text"> {`${this.props.message}`}</div>
             </li>
         )
 
