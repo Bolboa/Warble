@@ -12,10 +12,10 @@
  
  ![Alt text](/github_images/step2.gif)
  
-##APIs
+## APIs
 * PeerJS (P2P communication using WebRTC)
 
-##Technologies
+## Technologies
 * Redux-React
 * Node.js
 * MongoDB (MLab)
